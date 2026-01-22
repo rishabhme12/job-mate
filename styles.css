@@ -1,0 +1,40 @@
+/* JobMate Tag Styles */
+.job-mate-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-left: 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #0a66c2; /* LinkedIn Blue default */
+  vertical-align: middle;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.job-mate-tag.backend { background-color: #2da44e; } /* Green */
+.job-mate-tag.frontend { background-color: #a371f7; } /* Purple */
+.job-mate-tag.fullstack { background-color: #d15d9f; } /* Pink */
+.job-mate-tag.mobile { background-color: #f7a239; } /* Orange */
+.job-mate-tag.data { background-color: #3178c6; } /* Blue */
+.job-mate-tag.devops { background-color: #566e85; } /* Grey-Blue */
+.job-mate-tag.security { background-color: #d73a49; } /* Red */
+.job-mate-tag.ai-ml { background-color: #6f42c1; } /* Dark Purple */
+.job-mate-tag.qa { background-color: #959da5; } /* Grey */
+.job-mate-tag.product { background-color: #f1e05a; color: #333; } /* Yellow */
+.job-mate-tag.unknown { background-color: #6e7681; } /* Grey */
+.job-mate-tag.not-job { display: none; } /* Hide if not a job */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading state */
+.job-mate-tag.loading {
+  background-color: #f3f3f3;
+  color: #666;
+  border: 1px solid #e1e1e1;
+}

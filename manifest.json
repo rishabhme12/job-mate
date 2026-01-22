@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "JobMate - AI Job Tagger",
+  "version": "1.0",
+  "description": "Tag LinkedIn jobs with their engineering type using on-device AI.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https:;"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "injected_ai.js"
+      ],
+      "matches": [
+        "https://www.linkedin.com/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
+    }
+  ]
+}
