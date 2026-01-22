@@ -11,6 +11,7 @@ function getTagClass(tag) {
         'Mobile': 'mobile',
         'Data': 'data',
         'DevOps': 'devops',
+        'Embedded/Systems': 'backend', // Re-using backend style for now as it's close to backend/systems
         'Cloud': 'cloud',
         'Security': 'security',
         'AI/ML': 'ai-ml',
