@@ -7,7 +7,7 @@ const KEYWORD_BUCKETS = {
     'Backend': ['backend', 'back-end', 'java', 'spring', 'python', 'django', 'flask', 'fastapi', 'node', 'express', 'nestjs', 'golang', 'go lang', 'ruby', 'rails', 'php', 'laravel', 'c#', '.net', 'sql', 'database', 'postgresql', 'mysql', 'redis', 'api', 'microservices', 'server-side', 'elasticsearch', 'opensearch'],
     'Frontend': ['frontend', 'front-end', 'javascript', 'typescript', 'react', 'next.js', 'vue', 'angular', 'svelte', 'html', 'css', 'tailwind', 'sass', 'webpack', 'vite', 'redux', 'ui/ux', 'web design', 'figma'],
     'Mobile': ['mobile', 'ios', 'android', 'swift', 'kotlin', 'flutter', 'react native', 'dart', 'objective-c', 'app developer', 'mobile developer'],
-    'Data': ['data engineer', 'data scientist', 'data analyst', 'big data', 'sql', 'spark', 'hadoop', 'kafka', 'airflow', 'etl', 'pandas', 'numpy', 'tableau', 'power bi', 'snowflake', 'databricks', 'warehouse', 'redshift', 'dbt', 'elasticsearch', 'opensearch', 'solr', 'lucene', 'vector database'],
+    'Data': ['data engineer', 'data scientist', 'data analyst', 'big data', 'sql', 'spark', 'hadoop', 'kafka', 'airflow', 'etl', 'pandas', 'numpy', 'tableau', 'power bi', 'snowflake', 'databricks', 'warehouse', 'redshift', 'dbt', 'elasticsearch', 'opensearch', 'solr', 'lucene', 'vector database', 'python', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'data integration', 'informatica', 'iics', 'powercenter'],
     'DevOps': ['devops', 'sre', 'site reliability', 'cloud', 'aws', 'amazon web services', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'ansible', 'jenkins', 'ci/cd', 'linux', 'bash', 'scripting', 'infrastructure', 'sysadmin'],
     'Embedded/Systems': ['embedded', 'firmware', 'kernel', 'driver', 'dpdk', 'tcp/ip', 'rtos', 'microcontroller', 'fpga', 'verilog', 'assembly', 'distributed systems', 'low latency'],
     'AI/ML': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'nlp', 'computer vision', 'pytorch', 'tensorflow', 'keras', 'hugging face', 'llm', 'generative ai', 'scikit-learn', 'model training', 'rag', 'transformer'],
@@ -44,7 +44,8 @@ class KeywordEngine {
         for (const category in KEYWORD_BUCKETS) {
             const keywords = KEYWORD_BUCKETS[category];
             for (const kw of keywords) {
-                if (cleanTitle.includes(kw)) {
+                const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+                if (regex.test(cleanTitle)) {
                     scores[category] += TITLE_WEIGHT;
                 }
             }
@@ -80,9 +81,13 @@ class KeywordEngine {
             }
         }
 
-        // Find winner
-        let maxScore = 0;
+        // Tie-Breaking Rule for DevOps
+        // "DevOps" often wins just because of keywords like AWS, Cloud, Docker, CI/CD which are valid for Backend/Data too.
+        // Rule: If DevOps is the winner, but Backend or Data is *close* (within 20% or 5 points), 
+        // we prefer Backend/Data because those are the "primary" roles.
+
         let winner = 'Not Sure';
+        let maxScore = -1;
 
         for (const category in scores) {
             if (scores[category] > maxScore) {
@@ -91,8 +96,33 @@ class KeywordEngine {
             }
         }
 
-        // Threshold?
-        if (maxScore < 3) return 'Not Sure'; // Too generic
+        if (winner === 'DevOps') {
+            const backendScore = scores['Backend'] || 0;
+            const dataScore = scores['Data'] || 0;
+            const fullstackScore = scores['Fullstack'] || 0;
+
+            // If Backend is close to DevOps (e.g. DevOps=20, Backend=18), pick Backend.
+            // Why? Because a Backend Engineer *uses* DevOps tools. A DevOps Engineer *is* the toolsmith.
+            // Hard to distinguish, but usually if Python/Java/Code is heavy, it's Backend.
+            // NEW LOGIC: Find the best alternative, don't just pick the first one.
+            const candidates = [
+                { type: 'Backend', score: backendScore },
+                { type: 'Data', score: dataScore },
+                { type: 'Fullstack', score: fullstackScore }
+            ];
+
+            // Filter those who pass the threshold
+            const qualifiers = candidates.filter(c => c.score > maxScore * 0.6);
+
+            if (qualifiers.length > 0) {
+                // Return the one with the highest score
+                qualifiers.sort((a, b) => b.score - a.score);
+                return qualifiers[0].type;
+            }
+        }
+
+        // Standard Max Score check
+        if (maxScore < 3) return 'Not Sure';
 
         return winner;
     }
