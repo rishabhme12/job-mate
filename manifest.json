@@ -7,10 +7,6 @@
     "activeTab",
     "scripting"
   ],
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https:;"
   },
@@ -30,6 +26,7 @@
         "https://www.linkedin.com/*"
       ],
       "js": [
+        "keyword_engine.js",
         "content.js"
       ],
       "css": [
