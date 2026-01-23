@@ -9,7 +9,9 @@ function getTagClass(tag) {
         'Frontend': 'frontend',
         'Fullstack': 'fullstack',
         'Mobile': 'mobile',
-        'Data': 'data',
+        'Data Engineering': 'data',
+        'Data Analytics': 'data', // Or creating a new color later
+        'Data Science': 'ai-ml', // Close to AI
         'DevOps': 'devops',
         'Embedded/Systems': 'backend', // Re-using backend style for now as it's close to backend/systems
         'Cloud': 'cloud',

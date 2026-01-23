@@ -7,10 +7,12 @@ const KEYWORD_BUCKETS = {
     'Backend': ['backend', 'back-end', 'java', 'spring', 'python', 'django', 'flask', 'fastapi', 'node', 'express', 'nestjs', 'golang', 'go lang', 'ruby', 'rails', 'php', 'laravel', 'c#', '.net', 'sql', 'database', 'postgresql', 'mysql', 'redis', 'api', 'microservices', 'server-side', 'elasticsearch', 'opensearch'],
     'Frontend': ['frontend', 'front-end', 'javascript', 'typescript', 'react', 'next.js', 'vue', 'angular', 'svelte', 'html', 'css', 'tailwind', 'sass', 'webpack', 'vite', 'redux', 'ui/ux', 'web design', 'figma'],
     'Mobile': ['mobile', 'ios', 'android', 'swift', 'kotlin', 'flutter', 'react native', 'dart', 'objective-c', 'app developer', 'mobile developer'],
-    'Data': ['data engineer', 'data scientist', 'data analyst', 'big data', 'sql', 'spark', 'hadoop', 'kafka', 'airflow', 'etl', 'pandas', 'numpy', 'tableau', 'power bi', 'snowflake', 'databricks', 'warehouse', 'redshift', 'dbt', 'elasticsearch', 'opensearch', 'solr', 'lucene', 'vector database', 'python', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'data integration', 'informatica', 'iics', 'powercenter'],
+    'Data Engineering': ['data engineer', 'big data', 'spark', 'hadoop', 'kafka', 'airflow', 'etl', 'hivesql', 'snowflake', 'databricks', 'warehouse', 'redshift', 'dbt', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'informatica', 'iics', 'powercenter', 'scala', 'flink'],
+    'Data Analytics': ['data analyst', 'business analyst', 'business intelligence', 'bi', 'tableau', 'power bi', 'looker', 'quicksight', 'dashboard', 'visualization', 'analytics', 'reporting', 'excel', 'sheets', 'statistics', 'a/b testing', 'mixpanel'],
+    'Data Science': ['data scientist', 'data science', 'pandas', 'numpy', 'scipy', 'scikit-learn', 'matplotlib', 'seaborn', 'jupyter', 'modeling', 'predictive', 'statistical', 'r programming', 'mathematics'],
     'DevOps': ['devops', 'sre', 'site reliability', 'cloud', 'aws', 'amazon web services', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'ansible', 'jenkins', 'ci/cd', 'linux', 'bash', 'scripting', 'infrastructure', 'sysadmin'],
     'Embedded/Systems': ['embedded', 'firmware', 'kernel', 'driver', 'dpdk', 'tcp/ip', 'rtos', 'microcontroller', 'fpga', 'verilog', 'assembly', 'distributed systems', 'low latency'],
-    'AI/ML': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'nlp', 'computer vision', 'pytorch', 'tensorflow', 'keras', 'hugging face', 'llm', 'generative ai', 'scikit-learn', 'model training', 'rag', 'transformer'],
+    'AI/ML': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'nlp', 'computer vision', 'pytorch', 'tensorflow', 'keras', 'hugging face', 'llm', 'generative ai', 'rag', 'transformer', 'neural network'],
     'QA': ['qa', 'quality assurance', 'test', 'automation', 'selenium', 'cypress', 'playwright', 'junit', 'pytest', 'manual testing', 'sdet'],
     'Security': ['security', 'cyber', 'infosec', 'penetration', 'vulnerability', 'cryptography', 'network security', 'ciso', 'soc'],
     'Product': ['product manager', 'product owner', 'technical product manager', 'roadmap', 'agile', 'scrum', 'user stories', 'backlog', 'stakeholder'],
@@ -98,20 +100,21 @@ class KeywordEngine {
 
         if (winner === 'DevOps') {
             const backendScore = scores['Backend'] || 0;
-            const dataScore = scores['Data'] || 0;
             const fullstackScore = scores['Fullstack'] || 0;
+            const dataEngScore = scores['Data Engineering'] || 0;
+            const dataAnalyticsScore = scores['Data Analytics'] || 0;
+            const dataScienceScore = scores['Data Science'] || 0;
 
-            // If Backend is close to DevOps (e.g. DevOps=20, Backend=18), pick Backend.
-            // Why? Because a Backend Engineer *uses* DevOps tools. A DevOps Engineer *is* the toolsmith.
-            // Hard to distinguish, but usually if Python/Java/Code is heavy, it's Backend.
-            // NEW LOGIC: Find the best alternative, don't just pick the first one.
+            // NEW LOGIC: Find the best alternative
             const candidates = [
                 { type: 'Backend', score: backendScore },
-                { type: 'Data', score: dataScore },
-                { type: 'Fullstack', score: fullstackScore }
+                { type: 'Fullstack', score: fullstackScore },
+                { type: 'Data Engineering', score: dataEngScore },
+                { type: 'Data Analytics', score: dataAnalyticsScore },
+                { type: 'Data Science', score: dataScienceScore }
             ];
 
-            // Filter those who pass the threshold
+            // Filter those who pass the threshold (60% of DevOps score)
             const qualifiers = candidates.filter(c => c.score > maxScore * 0.6);
 
             if (qualifiers.length > 0) {
