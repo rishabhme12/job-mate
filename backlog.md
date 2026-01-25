@@ -29,6 +29,7 @@ Hide Company: User-defined blacklist (e.g., "CyberCoders", "Revature").
 Hide Negative Keywords: Filter out titles with "Senior", "Lead", "Staff".
 Hide "Easy Apply": Option to hide (or show only) Easy Apply jobs.
 Hide jobs where applied > x (x is configurable)
+Hide promoted jobs
 
 2. 🔍 Precision Search (Title & Time)
 User Story: "Show me specific roles posted recently."
@@ -36,6 +37,8 @@ User Story: "Show me specific roles posted recently."
 Multi-Keyword Title Match: Allow Data Engineer OR ETL Engineer. (Implemented via our own JS filter on the list, distinct from LinkedIn's broad search).
 Time Filter: "Posted within X hours". (Implemented via f_TPR URL parameter for accuracy, e.g., r43200 for 12 hours).
 Sticky Settings: Remember my filters between sessions.
+Actively reviweing candidates
+
 🚀 Priority 2: Deep Insights (Expanded View)
 Goal: Provide decision-making data instantly upon clicking a job.
 
