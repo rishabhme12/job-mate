@@ -21,8 +21,12 @@ const KEYWORD_BUCKETS = {
 
 // Negative lookahead/lookbehind is hard in simple iterators, so we use scoring.
 // Some keywords are "stronger" than others.
-const TITLE_WEIGHT = 50; // Title match = 50 points
-const BODY_WEIGHT = 1;   // Body match = 1 point
+// Dynamic Scoring Constants
+// If description is short (scraper failed), we rely 100% on Title.
+// If description is long, we let the Body content override the Title if there's enough evidence.
+const TITLE_ONLY_WEIGHT = 100;
+const TITLE_HINT_WEIGHT = 20;  // Title is just a hint if we have body text
+const BODY_MATCH_WEIGHT = 2;   // Every body keyword is worth 2 points
 
 class KeywordEngine {
 
@@ -41,30 +45,38 @@ class KeywordEngine {
             scores[category] = 0;
         }
 
-        // 1. Scan Job Title (Heavy Weighing)
-        // If the title explicitly says "Backend Engineer", we want that to win even if the body mentions "React" once.
+        // Determine Weights based on available data
+        let currentTitleWeight = TITLE_HINT_WEIGHT;
+        let currentBodyWeight = BODY_MATCH_WEIGHT;
+
+        // EDGE CASE: If description is missing or very short (scraper failed context/auth wall),
+        // we MUST rely on the Title.
+        if (cleanDesc.length < 200) {
+            console.log("JobMate: Short Description detected. Relying on Title.");
+            currentTitleWeight = TITLE_ONLY_WEIGHT;
+            currentBodyWeight = 0; // Ignore body noise if it's just "About Us" or empty
+        }
+
+        // 1. Scan Job Title
         for (const category in KEYWORD_BUCKETS) {
             const keywords = KEYWORD_BUCKETS[category];
             for (const kw of keywords) {
                 const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
                 if (regex.test(cleanTitle)) {
-                    scores[category] += TITLE_WEIGHT;
+                    scores[category] += currentTitleWeight;
                 }
             }
         }
 
         // 2. Scan Body (Frequency Counting)
-        for (const category in KEYWORD_BUCKETS) {
-            const keywords = KEYWORD_BUCKETS[category];
-            for (const kw of keywords) {
-                // Regex to count occurrences (word boundary check is safer but slower, simple includes is fast)
-                // For speed, we'll split by spaces or just use split.
-                // Actually, split is slow. Let's strictly use checking presence?
-                // No, frequency matters. "Java" mentioned 10 times vs "Javascript" mentioned 1 time.
-
-                const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
-                const matches = (cleanDesc.match(regex) || []).length;
-                scores[category] += matches * BODY_WEIGHT;
+        if (currentBodyWeight > 0) {
+            for (const category in KEYWORD_BUCKETS) {
+                const keywords = KEYWORD_BUCKETS[category];
+                for (const kw of keywords) {
+                    const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                    const matches = (cleanDesc.match(regex) || []).length;
+                    scores[category] += matches * currentBodyWeight;
+                }
             }
         }
 
@@ -78,7 +90,7 @@ class KeywordEngine {
         if (scores['Fullstack'] > 0 || (cleanTitle.includes('full') && cleanTitle.includes('stack'))) {
             // Check if we have strong backend AND frontend signals?
             // Actually, usually title is enough.
-            if (scores['Fullstack'] >= TITLE_WEIGHT) {
+            if (scores['Fullstack'] >= currentTitleWeight) {
                 return 'Fullstack';
             }
         }
