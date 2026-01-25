@@ -1,130 +1,276 @@
-// JobMate Content Script
+// JobMate Content Script (v9.1 - Throttled Fixed)
 
-let processing = new WeakSet();
 let lastUrl = location.href;
+let debounceTimer = null;
+let lastClickTime = 0;
+let isNavigating = false;
+let lastScrapedTitle = '';
 
-function getTagClass(tag) {
-    const map = {
-        'Backend': 'backend',
-        'Frontend': 'frontend',
-        'Fullstack': 'fullstack',
-        'Mobile': 'mobile',
-        'Data Engineering': 'data',
-        'Data Analytics': 'data', // Or creating a new color later
-        'Data Science': 'ai-ml', // Close to AI
-        'DevOps': 'devops',
-        'Embedded/Systems': 'backend', // Re-using backend style for now as it's close to backend/systems
-        'Cloud': 'cloud',
-        'Security': 'security',
-        'AI/ML': 'ai-ml',
-        'QA': 'qa',
-        'Product Manager': 'product',
-        'Product': 'product',
-        'Non-Engineering': 'unknown',
-        'Not Sure': 'unknown',
-        'Not a Job': 'not-job'
+// --- Performance Utilities ---
+function debounce(func, wait) {
+    return function () {
+        const context = this, args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), wait);
     };
-    return map[tag] || 'unknown';
 }
 
+function throttle(func, limit) {
+    let inThrottle;
+    return function () {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
 
+// --- Helper: Tagging Logic ---
+function getTagClass(tag) {
+    const cleanTag = tag.toLowerCase().replace(/\s/g, '-');
+    if (cleanTag.includes('backend')) return 'backend';
+    if (cleanTag.includes('frontend')) return 'frontend';
+    if (cleanTag.includes('fullstack')) return 'fullstack';
+    if (cleanTag.includes('data')) return 'data';
+    if (cleanTag.includes('devops') || cleanTag.includes('sre')) return 'devops';
+    if (cleanTag.includes('ai') || cleanTag.includes('machine') || cleanTag.includes('learning')) return 'ai-ml';
+    if (cleanTag.includes('security')) return 'security';
+    if (cleanTag.includes('product')) return 'product';
+    return 'unknown';
+}
 
 function injectTag(titleElement, jobDescription) {
-    // 1. Basic Locks
-    if (processing.has(titleElement)) return;
+    if (!titleElement) return;
 
-    // 3. Signature check
-    const jobSignature = (titleElement.innerText + jobDescription.substring(0, 50)).replace(/\s/g, '');
-    if (titleElement.dataset.lastJobSignature === jobSignature) return;
+    // Create a simplified signature based on Title Only for the tag
+    const jobSignature = titleElement.innerText.trim();
+    if (titleElement.dataset.lastJobTagSignature === jobSignature) return;
 
-    // Clear stale tag
-    const oldTag = titleElement.querySelector('.job-mate-tag');
-    if (oldTag) oldTag.remove();
-
-    // 4. Capture Text BEFORE modifying DOM (CRITICAL FIX)
     const cleanTitle = titleElement.innerText.trim();
-    const fullText = cleanTitle + "\n" + jobDescription;
+    if (!window.KeywordEngine) return;
 
-    // Lock and Mark
-    processing.add(titleElement);
-    titleElement.dataset.lastJobSignature = jobSignature;
+    const classification = window.KeywordEngine.classify(cleanTitle, cleanTitle + " " + jobDescription);
+    if (classification === 'Not Sure' || classification === 'Not a Job') return;
 
-    // Synchronous Classification (Instant)
-    const classification = window.KeywordEngine.classify(cleanTitle, fullText);
-
-    // Remove temporary lock immediately since we are done
-    processing.delete(titleElement);
-
-    if (classification === 'Not Sure' || classification === 'Not a Job') {
-        // Optional: Show nothing if not sure, or show '?'
-        if (oldTag) oldTag.remove();
-        return;
-    }
-
-    // 5. Add/Update UI
     let tagEl = titleElement.querySelector('.job-mate-tag');
     if (!tagEl) {
         tagEl = document.createElement('span');
-        tagEl.className = 'job-mate-tag';
         titleElement.appendChild(tagEl);
     }
 
-    tagEl.innerText = classification;
     tagEl.className = `job-mate-tag ${getTagClass(classification)}`;
-    tagEl.classList.remove('loading'); // Just in case
+    tagEl.innerText = classification;
+    titleElement.dataset.lastJobTagSignature = jobSignature;
 }
 
-// === Strategy for Job View Page ===
-function handleJobViewPage() {
-    const titleEl = document.querySelector('.job-details-jobs-unified-top-card__job-title h1');
-    const descriptionEl = document.querySelector('.jobs-description__content');
+// --- Insight Panel (Granular Loading) ---
+const InsightPanel = {
+    // Fast Selector Cache
+    getTitleElement() {
+        return document.querySelector('.job-details-jobs-unified-top-card__job-title h1') ||
+            document.querySelector('.jobs-unified-top-card__job-title h1') ||
+            document.querySelector('h1.t-24');
+    },
 
-    if (titleEl && descriptionEl) {
-        const descText = descriptionEl.innerText;
-        if (descText.length > 50) {
-            injectTag(titleEl, descText);
+    // 1. Instant Shimmer Injection
+    showSkeleton(force = false) {
+        const titleH1 = this.getTitleElement();
+        if (!titleH1) return;
+
+        const container = titleH1.parentElement.parentElement;
+        if (!container) return;
+
+        let row = container.querySelector('.job-mate-stats-row');
+
+        // Optimize: If we have a row, handle force logic without destroying DOM
+        if (row) {
+            // If we are already shimmering, don't touch anything (Stabilize)
+            if (row.dataset.state === 'loading') return;
+
+            // If forced (e.g. click), wipe it to prepare for shimmer
+            if (force) {
+                row.innerHTML = '';
+                row.dataset.state = 'loading';
+            }
+        } else {
+            // Create new if missing
+            row = document.createElement('div');
+            row.className = 'job-mate-stats-row';
+            row.dataset.state = 'loading';
+            container.appendChild(row);
+        }
+
+        // Add Skeletons if empty
+        if (row.innerHTML === '') {
+            for (let i = 0; i < 3; i++) {
+                const skel = document.createElement('span');
+                skel.className = 'job-mate-stat-tag job-mate-skeleton';
+                skel.style.width = (80 + Math.random() * 40) + 'px'; // Random widths
+                row.appendChild(skel);
+            }
+        }
+    },
+
+    // 2. Data Fetch & Render
+    run() {
+        const titleH1 = this.getTitleElement();
+        if (!titleH1) return;
+
+        const currentTitle = titleH1.innerText.trim();
+
+        // Critical: Detection of Stale Content
+        if (isNavigating && currentTitle === lastScrapedTitle) {
+            this.showSkeleton(true);
+            return;
+        }
+
+        // Title Changed -> We are live!
+        isNavigating = false;
+        lastScrapedTitle = currentTitle;
+
+        const layoutType = document.querySelector('.job-details-jobs-unified-top-card__job-title h1') ? 'split' : 'standalone';
+        const container = titleH1.parentElement.parentElement;
+        if (!container) return;
+
+        let row = container.querySelector('.job-mate-stats-row');
+        if (!row) {
+            this.showSkeleton();
+            row = container.querySelector('.job-mate-stats-row');
+        }
+
+        const descriptionEl = document.querySelector('.jobs-description__content') || document.querySelector('#job-details');
+        if (!descriptionEl) return;
+
+        const data = this.scrape(layoutType);
+
+        if (data.applicants === 'N/A' && data.size === 'N/A' && data.industry === 'N/A' && data.linkedinCount === 'N/A') {
+            if (Date.now() - lastClickTime < 2500) {
+                setTimeout(() => this.run(), 200);
+                return;
+            }
+        }
+
+        this.render(row, data, currentTitle);
+    },
+
+    scrape(layoutType) {
+        const data = { applicants: 'N/A', industry: 'N/A', size: 'N/A', linkedinCount: 'N/A' };
+        const wrapperSelector = layoutType === 'standalone' ? '.jobs-unified-top-card' : '.jobs-search__job-details--wrapper';
+        const wrapper = document.querySelector(wrapperSelector) || document.body;
+        const topText = wrapper.innerText.substring(0, 2000);
+
+        const appMatch = topText.match(/(\d+|Over \d+)\s+applicants/) || topText.match(/(\d+)\s+people\s+clicked\s+apply/);
+        if (appMatch) {
+            data.applicants = appMatch[0].replace('people clicked apply', 'Clicks').replace('applicants', 'Applicants');
+        }
+
+        const headings = document.getElementsByTagName('h2');
+        for (let i = 0; i < headings.length; i++) {
+            if (headings[i].innerText.includes('About the company')) {
+                const container = headings[i].closest('section') || headings[i].parentElement;
+                if (container) {
+                    const text = container.innerText;
+                    const sizeMatch = text.match(/([\d,]+\+?|[\d,]+-[\d,]+)\s+employees/i);
+                    if (sizeMatch) data.size = sizeMatch[0].replace(' employees', '');
+                    const liMatch = text.match(/([\d,]+)\s+on\s+LinkedIn/i);
+                    if (liMatch) data.linkedinCount = liMatch[1] + " on LI";
+
+                    const lines = text.split('\n').filter(l => l.includes('employees') && l.includes('·'));
+                    if (lines.length > 0) data.industry = lines[0].split('·')[0].trim();
+                }
+                break;
+            }
+        }
+        return data;
+    },
+
+    render(row, data, signature) {
+        row.innerHTML = '';
+        row.dataset.state = 'loaded';
+        row.dataset.jobSignature = signature;
+
+        const appendTag = (text, type, icon) => {
+            if (text && text !== 'N/A') {
+                const span = document.createElement('span');
+                span.className = `job-mate-stat-tag`;
+                span.dataset.type = type;
+                span.innerHTML = `<i>${icon}</i>${text}`;
+                row.appendChild(span);
+            }
+        };
+
+        appendTag(data.applicants, 'applicants', '👥');
+        appendTag(data.size, 'company', '🏢');
+        appendTag(data.industry, 'industry', '🏭');
+        appendTag(data.linkedinCount, 'company', '🔗');
+
+        if (row.innerHTML === '') {
+            appendTag('Scanning...', 'company', '⏳');
         }
     }
+};
+
+// --- Click Listener for Instant Feedback ---
+function setupClickListeners() {
+    document.addEventListener('click', (e) => {
+        const jobCard = e.target.closest('.job-card-container') ||
+            e.target.closest('.jobs-search-results__list-item');
+
+        if (jobCard) {
+            isNavigating = true;
+            lastClickTime = Date.now();
+            console.log("JobMate: Click detected");
+
+            const rightPaneTitle = document.querySelector('.job-details-jobs-unified-top-card__job-title h1');
+            if (rightPaneTitle) {
+                lastScrapedTitle = rightPaneTitle.innerText.trim();
+
+                // 1. Wipe Stats Row
+                const row = rightPaneTitle.parentElement.parentElement.querySelector('.job-mate-stats-row');
+                if (row) {
+                    row.innerHTML = '';
+                    InsightPanel.showSkeleton(true);
+                }
+
+                // 2. Wipe Role Tag (Fixes Flash/Jump)
+                const oldTag = rightPaneTitle.querySelector('.job-mate-tag');
+                if (oldTag) oldTag.remove();
+            }
+        }
+    }, true);
 }
 
-// === Strategy for Job List / Search Page ===
-function handleJobSearchPage() {
-    const detailContainer = document.querySelector('.jobs-search__job-details--container');
-    if (!detailContainer) return;
-
-    const titleEl = detailContainer.querySelector('.job-details-jobs-unified-top-card__job-title h1');
-    const descriptionEl = detailContainer.querySelector('.jobs-description__content');
-
-    if (titleEl && descriptionEl) {
-        const descText = descriptionEl.innerText;
-        if (descText.length > 50) {
-            injectTag(titleEl, descText);
+// --- Main Coordinator ---
+const JobMate = {
+    handleMutation() {
+        const titleEl = InsightPanel.getTitleElement();
+        if (titleEl) {
+            const desc = document.querySelector('.jobs-description__content');
+            if (desc) injectTag(titleEl, desc.innerText);
+            InsightPanel.run();
         }
     }
-}
+};
 
-// === Main Observer ===
+// --- Init ---
+setupClickListeners();
+
+const runDebounced = debounce(() => JobMate.handleMutation(), 200);
+const runThrottled = throttle(() => JobMate.handleMutation(), 100);
+
 const observer = new MutationObserver((mutations) => {
-    // 1. Detect URL Change
-    if (location.href !== lastUrl) {
-        lastUrl = location.href;
-        console.log("JobMate: URL Changed");
-        setTimeout(handleJobViewPage, 1000);
-        setTimeout(handleJobSearchPage, 1000);
-    }
+    if (!window.location.href.includes('/jobs/')) return;
 
-    // 2. DOM Changes
-    if (window.location.href.includes('/jobs/')) {
-        handleJobViewPage();
-        handleJobSearchPage();
+    if (Date.now() - lastClickTime < 2500) {
+        runThrottled();
+    } else {
+        runDebounced();
     }
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
 
-// Initial check
-if (window.location.href.includes('/jobs/')) {
-    setTimeout(handleJobViewPage, 2000);
-    setTimeout(handleJobSearchPage, 2000);
-}
-console.log("JobMate: Content Script Loaded (Clean Build)");
+console.log("JobMate: Content Script (v9.1 Throttled Fixed) Loaded");
