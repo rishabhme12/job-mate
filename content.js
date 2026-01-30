@@ -245,7 +245,24 @@ function setupClickListeners() {
 
 // --- Main Coordinator ---
 const JobMate = {
+    _timerSet: false,
+
     handleMutation() {
+        // Enforce 1s Layout Stabilization (Covers User's "Jerky" request)
+        const elapsed = Date.now() - lastClickTime;
+        if (elapsed < 1000) {
+            InsightPanel.showSkeleton();
+
+            if (!this._timerSet) {
+                this._timerSet = true;
+                setTimeout(() => {
+                    this._timerSet = false;
+                    JobMate.handleMutation();
+                }, 1000 - elapsed + 20);
+            }
+            return;
+        }
+
         const titleEl = InsightPanel.getTitleElement();
         if (titleEl) {
             const desc = document.querySelector('.jobs-description__content');
