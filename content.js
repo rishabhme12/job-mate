@@ -158,7 +158,16 @@ const InsightPanel = {
 
     scrape(layoutType) {
         const data = { industry: 'N/A', size: 'N/A', linkedinCount: 'N/A' };
+        let topText = '';
 
+        try {
+            const topNode = document.querySelector('.job-details-jobs-unified-top-card__content-wrapper') ||
+                document.querySelector('.jobs-unified-top-card__content-wrapper') ||
+                document.body;
+            topText = topNode ? topNode.innerText : '';
+        } catch (e) {
+            console.warn('JobMate: Error reading topNode', e);
+        }
 
         const headings = document.getElementsByTagName('h2');
         for (let i = 0; i < headings.length; i++) {
@@ -177,7 +186,8 @@ const InsightPanel = {
                 break;
             }
         }
-        const lowerText = topText.toLowerCase();
+
+        const lowerText = (topText || '').toLowerCase();
         data.hasActivelyRecruiting = lowerText.includes('actively recruiting');
         data.hasEarlyApplicant = lowerText.includes('early applicant') || lowerText.includes('be one of the first');
         data.hasReviewTime = lowerText.includes('time to hear back') || lowerText.includes('responds within');
@@ -350,6 +360,10 @@ JobMate.handleMutation = function () {
 
     // Attempt Injection (Reactive)
     jmControlBar.inject();
+
+    // Ensure button states match current URL/Settings (Fixes SPA navigation issues)
+    jmControlBar.updateSearchButtonState();
+    jmControlBar.updatePageButtonState();
 };
 
-console.log("JobMate: Content Script (v10.1 Event-Driven) Loaded");
+console.log("JobMate: Content Script (v10.2 Dual Modals) Ready");

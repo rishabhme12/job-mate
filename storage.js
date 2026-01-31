@@ -15,6 +15,12 @@ const JobMateStorage = {
             negativeKeywords: [], // Negative match
             companyBlacklist: []
         },
+        searchTweaks: {
+            datePostedHours: "",
+            mustContain: "",
+            excludes: "",
+            companyBlacklist: ""
+        },
         ui: {
             expanded: true
         }
@@ -41,6 +47,7 @@ const JobMateStorage = {
                     // Deep merge with defaults to ensure structure
                     const merged = {
                         filters: { ...this.defaults.filters, ...saved.filters },
+                        searchTweaks: { ...this.defaults.searchTweaks, ...saved.searchTweaks },
                         ui: { ...this.defaults.ui, ...saved.ui }
                     };
                     resolve(merged);
@@ -60,6 +67,7 @@ const JobMateStorage = {
             const current = await this.getSettings();
             const updated = {
                 filters: { ...current.filters, ...(newSettings.filters || {}) },
+                searchTweaks: { ...current.searchTweaks, ...(newSettings.searchTweaks || {}) },
                 ui: { ...current.ui, ...(newSettings.ui || {}) }
             };
 

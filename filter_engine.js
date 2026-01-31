@@ -190,6 +190,16 @@ class FilterEngine {
 
         let hiddenCount = 0;
         jobItems.forEach(item => {
+            // SAFETY: Do not hide the currently selected job!
+            const isActive = item.classList.contains('jobs-search-results-list__list-item--active') ||
+                item.classList.contains('job-card-container--active') ||
+                item.matches('.jobs-search-results-list__list-item--active');
+
+            if (isActive) {
+                item.classList.remove('job-mate-hidden');
+                return;
+            }
+
             const show = this.shouldShowJob(item);
             if (show) {
                 item.classList.remove('job-mate-hidden');

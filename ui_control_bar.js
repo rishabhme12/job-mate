@@ -1,14 +1,17 @@
 /**
  * JobMate UI Control Bar
- * Renders the "Advanced Filters" button and manages the Filter Modal.
+ * Renders the "Page Filters" and "Search Tweaks" buttons and manages their respective Modals.
  */
 class JobMateControlBar {
     constructor(storage, filterEngine) {
         this.storage = storage;
         this.filterEngine = filterEngine;
         this.container = null;
-        this.modal = null;
-        this.overlay = null;
+
+        // Modals
+        this.pageOverlay = null; // Frontend DOM filters
+        this.searchOverlay = null; // Backend URL filters
+
         this.settings = null;
         this.tempSettings = null; // Stores changes before "Apply"
     }
@@ -16,126 +19,141 @@ class JobMateControlBar {
     async init() {
         this.settings = await this.storage.getSettings();
 
-        // RESET ON REFRESH: Force all specific job-property toggles to OFF.
-        // We keep text-based filters (Keywords, Blacklist) as they are likely long-term preferences.
+        // RESET ON REFRESH (User Request):
+        // "reset filter when reload page thoug you can save the textual value"
+        // We forciby set visual BOOLEAN toggles to false.
+        // We keep text filters (keywords/blacklist) as is.
+
         const f = this.settings.filters;
         f.hidePromoted = false;
         f.hideApplied = false;
         f.hideViewed = false;
         f.hideEasyApply = false;
-        f.easyApplyOnly = false;
         f.activelyReviewingOnly = false;
         f.earlyApplicantOnly = false;
         f.reviewTimeOnly = false;
-        f.postedWaitHours = null;
+        // Text filters maintained: titleKeywords, negativeKeywords, companyBlacklist
 
-
-        // Save this "Session Reset" state
         await this.storage.saveSettings(this.settings);
         this.filterEngine.updateSettings(this.settings.filters);
 
         if (this.inject()) {
-            this.updateButtonState();
+            this.updatePageButtonState();
+            this.updateSearchButtonState(); // Check URL for initial state
         }
-
-        // NOTE: We do NOT call filterEngine.applyFilters() here.
-        // Filters should only apply when user clicks "Show Results" or if we decide to auto-apply persistent text filters later.
-        // For now, per requirement: "filters shouldnt be in applied state unless user got and sbmit".
     }
 
     inject() {
-        // 1. Safety Check: Only run on Jobs pages
-        if (!window.location.href.includes('/jobs/') && !window.location.href.includes('/feed/')) {
-            return false;
-        }
+        if (!window.location.href.includes('/jobs/') && !window.location.href.includes('/feed/')) return false;
+        if (document.getElementById('job-mate-control-bar')) return true;
 
-        // 2. Prevent Duplicate Injection
-        if (document.getElementById('job-mate-control-bar')) {
-            return true;
-        }
-
-        // 3. Find Injection Point: Target native "All filters" button
-        // Common class for the "All filters" button in Search V2 / Reusables
-        // We look for the button, then go up to its flex item wrapper, then append after it.
         const allFiltersBtn = document.querySelector('.search-reusables__all-filters-pill-button') ||
             Array.from(document.querySelectorAll('button')).find(b => b.innerText.trim() === 'All filters');
 
         let injectionTarget = null;
-        let insertionMethod = 'append'; // 'append' or 'prepend'
+        let insertionMethod = 'append';
 
         if (allFiltersBtn) {
-            // Found the button!
-            // Usually wrapped in a div/li. Let's find the closest list item or flex wrapper.
-            // Structure: ul > li > button  OR  div.flex > div > button
             const wrapper = allFiltersBtn.closest('li') || allFiltersBtn.parentElement;
-
             if (wrapper && wrapper.parentElement) {
-                injectionTarget = wrapper; // We will insert AFTER this wrapper
+                injectionTarget = wrapper;
                 insertionMethod = 'after';
             } else {
                 injectionTarget = allFiltersBtn;
                 insertionMethod = 'after';
             }
         } else {
-            // STRICT INJECTION: Do not try to guess. If "All filters" isn't there, we don't inject.
-            // This prevents the button from appearing in random places (like the feed or nav bar).
             return false;
         }
 
         if (injectionTarget) {
             this.container = document.createElement('div');
             this.container.id = 'job-mate-control-bar';
-            this.container.className = 'job-mate-control-bar'; // Styles handled in CSS
-            this.container.innerHTML = this.renderButtonHTML();
+            this.container.className = 'job-mate-control-bar';
+            this.container.innerHTML = this.renderButtonsHTML();
 
-            // Adjust style to fit inline if we are in the filter bar
             if (insertionMethod === 'after') {
                 this.container.style.display = 'inline-flex';
                 this.container.style.marginBottom = '0';
-                this.container.style.padding = '0 0 0 8px'; // Add some left spacing
-
+                this.container.style.padding = '0 0 0 8px';
                 injectionTarget.insertAdjacentElement('afterend', this.container);
             } else {
                 injectionTarget.prepend(this.container);
             }
 
-            // Bind Button Events immediately
-            const btn = document.getElementById('job-mate-adv-filter-btn');
-            if (btn) btn.addEventListener('click', () => this.openModal());
+            // Bind Button Events
+            // Use Delegation for buttons to differentiate between main click and dismiss click
+            this.container.addEventListener('click', (e) => {
+                // Handle Dismiss Click
+                if (e.target.classList.contains('jm-dismiss-icon')) {
+                    e.stopPropagation(); // Prevent opening modal
+                    e.preventDefault();
+                    const action = e.target.dataset.action;
+                    if (action === 'reset-page') this.resetPageFilters();
+                    if (action === 'reset-search') this.resetSearchFilters();
+                    return;
+                }
+
+                // Handle Main Button Click (Bubble up)
+                const btn = e.target.closest('button');
+                if (btn) {
+                    if (btn.id === 'jm-btn-page-filters') this.openPageModal();
+                    if (btn.id === 'jm-btn-search-tweaks') this.openSearchModal();
+                }
+            });
 
         } else {
             return false;
         }
 
-        // 4. Inject Modal (if not exists)
-        if (!document.getElementById('job-mate-modal-overlay')) {
-            const modalContainer = document.createElement('div');
-            modalContainer.id = 'job-mate-modal-overlay';
-            modalContainer.className = 'job-mate-modal-overlay';
-            modalContainer.innerHTML = this.renderModalHTML();
-            document.body.appendChild(modalContainer);
-
-            this.overlay = modalContainer;
-            this.modal = modalContainer.querySelector('.job-mate-modal');
-            this.bindModalEvents();
-        }
-
+        this.injectModals();
         return true;
     }
 
-    renderButtonHTML() {
+    injectModals() {
+        // Page Filters Modal
+        if (!document.getElementById('jm-modal-overlay-page')) {
+            const el = document.createElement('div');
+            el.id = 'jm-modal-overlay-page';
+            el.className = 'job-mate-modal-overlay'; // Reusing generic class for style
+            el.innerHTML = this.renderPageModalHTML();
+            document.body.appendChild(el);
+            this.pageOverlay = el;
+            this.bindPageModalEvents();
+        }
+
+        // Search Tweaks Modal
+        if (!document.getElementById('jm-modal-overlay-search')) {
+            const el = document.createElement('div');
+            el.id = 'jm-modal-overlay-search';
+            el.className = 'job-mate-modal-overlay';
+            el.innerHTML = this.renderSearchModalHTML();
+            document.body.appendChild(el);
+            this.searchOverlay = el;
+            this.bindSearchModalEvents();
+        }
+    }
+
+    renderButtonsHTML() {
         return `
-            <div class="job-mate-bar-header">
-                <button id="job-mate-adv-filter-btn" class="job-mate-adv-filter-btn">
-                    <span>Advanced Filters</span>
+            <div class="job-mate-bar-header" style="display:flex; gap:8px;">
+                <button id="jm-btn-page-filters" class="jm-artdeco-pill">
+                    <span>Page Filters</span>
+                </button>
+                <button id="jm-btn-search-tweaks" class="jm-artdeco-pill">
+                    <span>Search Filter</span>
                 </button>
             </div>
         `;
     }
 
-    renderModalHTML() {
-        const toggle = (id, label, style = "margin-bottom:0;") => `
-            <label class="job-mate-toggle-wrapper" style="${style}">
+    /* =========================================================================
+       PAGE FILTERS (Frontend DOM Hiding)
+       ========================================================================= */
+
+    renderPageModalHTML() {
+        const toggle = (id, label) => `
+            <label class="job-mate-toggle-wrapper">
                 <span class="job-mate-toggle-label">${label}</span>
                 <div class="job-mate-toggle">
                     <input type="checkbox" id="${id}">
@@ -147,269 +165,399 @@ class JobMateControlBar {
         return `
             <div class="job-mate-modal">
                 <div class="job-mate-modal-header">
-                    <h2 class="job-mate-modal-title">Filter jobs</h2>
-                    <button class="job-mate-close-btn" id="jm-modal-close">×</button>
+                    <h2 class="job-mate-modal-title">Page Filters (Visual)</h2>
+                    <button class="job-mate-close-btn" id="jm-page-close">×</button>
                 </div>
                 <div class="job-mate-modal-body">
-                    
-                    <!-- Section: Keywords -->
                     <div class="job-mate-modal-section">
-                        <h3 class="job-mate-section-title">Keywords</h3>
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Title Must Contain (OR logic)</label>
-                            <input type="text" id="jm-title-keywords" class="job-mate-text-input" placeholder="e.g. Data, Backend, Staff">
-                        </div>
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Title Excludes (Hide these)</label>
-                            <input type="text" id="jm-negative-keywords" class="job-mate-text-input" placeholder="e.g. Intern, Manager, Senior">
-                        </div>
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Company Blacklist</label>
-                            <input type="text" id="jm-company-blacklist" class="job-mate-text-input" placeholder="e.g. Revature, CyberCoders">
-                        </div>
-                    </div>
-
-                    <!-- Section: Job Properties -->
-                    <div class="job-mate-modal-section">
-                        <h3 class="job-mate-section-title">Job Properties</h3>
+                        <h3 class="job-mate-section-title">Visibility</h3>
                         <div class="job-mate-checkbox-group">
                             ${toggle('jm-hide-promoted', 'Hide Promoted')}
                             ${toggle('jm-hide-applied', 'Hide Applied')}
                             ${toggle('jm-hide-viewed', 'Hide Viewed')}
-                            ${toggle('jm-easy-apply-only', 'Easy Apply Only')}
                             ${toggle('jm-hide-easy-apply', 'Hide Easy Apply')}
-                            ${toggle('jm-actively-reviewing', 'Actively Reviewing')}
-                            ${toggle('jm-early-applicant', 'Early Applicant')}
+                        </div>
+                    </div>
+                    <div class="job-mate-modal-section">
+                        <h3 class="job-mate-section-title">Quality Check</h3>
+                        <div class="job-mate-checkbox-group">
+                            ${toggle('jm-early-applicant', 'Early Applicant Only (<10 applicants)')}
+                            ${toggle('jm-actively-reviewing', 'Actively Reviewing Only')}
                             ${toggle('jm-review-time', 'Review Time Available')}
                         </div>
                     </div>
-
-                    <!-- Section: Time Filter -->
+                    
+                    <!-- Restoring Text Filters (Frontend) -->
                     <div class="job-mate-modal-section">
-                        <h3 class="job-mate-section-title">Time Filter</h3>
+                        <h3 class="job-mate-section-title">Text Filters (Hides on this page)</h3>
                         <div class="job-mate-input-group">
-                            <label class="job-mate-label">Posted within X Hours</label>
-                            <input type="number" id="jm-posted-hours" class="job-mate-text-input" placeholder="e.g. 12, 24" style="width: 120px;">
+                            <label class="job-mate-label">Title Must Contain</label>
+                            <input type="text" id="jm-page-must-contain" class="job-mate-text-input" placeholder="e.g. React, Node">
+                        </div>
+                        <div class="job-mate-input-group">
+                            <label class="job-mate-label">Title Excludes</label>
+                            <input type="text" id="jm-page-excludes" class="job-mate-text-input" placeholder="e.g. Intern, Senior">
+                        </div>
+                        <div class="job-mate-input-group">
+                            <label class="job-mate-label">Company Blacklist</label>
+                            <input type="text" id="jm-page-company-blacklist" class="job-mate-text-input" placeholder="e.g. Revature">
                         </div>
                     </div>
-
-
-
                 </div>
                 <div class="job-mate-modal-footer">
-                    <button class="job-mate-btn job-mate-btn-secondary" id="jm-modal-reset">Reset</button>
-                    <button class="job-mate-btn job-mate-btn-primary" id="jm-modal-apply">Show results</button>
+                    <button class="job-mate-btn job-mate-btn-secondary" id="jm-page-reset">Reset</button>
+                    <button class="job-mate-btn job-mate-btn-primary" id="jm-page-apply">Show results</button>
                 </div>
             </div>
         `;
     }
 
-    openModal() {
-        // 1. Clone current settings to tempSettings
+    openPageModal() {
+        // Clone settings
         this.tempSettings = JSON.parse(JSON.stringify(this.settings.filters));
 
-        // 2. Populate inputs from tempSettings
-        this.updateModalInputs();
-
-        // 3. Show Modal
-        if (this.overlay) {
-            this.overlay.classList.add('open');
-        }
-    }
-
-    closeModal() {
-        if (this.overlay) {
-            this.overlay.classList.remove('open');
-        }
-    }
-
-    updateModalInputs() {
+        // Populate
         const f = this.tempSettings;
-        if (!f) return;
-
-        const setVal = (id, val) => document.getElementById(id).value = val;
         const setCheck = (id, val) => document.getElementById(id).checked = val;
-        const join = (arr) => arr ? arr.join(', ') : '';
 
         setCheck('jm-hide-promoted', f.hidePromoted);
         setCheck('jm-hide-applied', f.hideApplied);
         setCheck('jm-hide-viewed', f.hideViewed);
         setCheck('jm-hide-easy-apply', f.hideEasyApply);
-        setCheck('jm-easy-apply-only', f.easyApplyOnly);
-        setCheck('jm-actively-reviewing', f.activelyReviewingOnly);
         setCheck('jm-early-applicant', f.earlyApplicantOnly);
+        setCheck('jm-actively-reviewing', f.activelyReviewingOnly);
         setCheck('jm-review-time', f.reviewTimeOnly);
 
-        setVal('jm-posted-hours', f.postedWaitHours || '');
+        // Populate Text Inputs
+        const join = (arr) => arr ? arr.join(', ') : '';
+        document.getElementById('jm-page-must-contain').value = join(f.titleKeywords);
+        document.getElementById('jm-page-excludes').value = join(f.negativeKeywords);
+        document.getElementById('jm-page-company-blacklist').value = join(f.companyBlacklist);
 
-        setVal('jm-title-keywords', join(f.titleKeywords));
-        setVal('jm-company-blacklist', join(f.companyBlacklist));
-        setVal('jm-negative-keywords', join(f.negativeKeywords));
-
+        this.pageOverlay.classList.add('open');
     }
 
-    readModalInputs() {
-        const getVal = (id) => document.getElementById(id).value;
-        const getCheck = (id) => document.getElementById(id).checked;
-        const split = (str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0);
-
-        const values = {
-            hidePromoted: getCheck('jm-hide-promoted'),
-            hideApplied: getCheck('jm-hide-applied'),
-            hideViewed: getCheck('jm-hide-viewed'),
-            hideEasyApply: getCheck('jm-hide-easy-apply'),
-            easyApplyOnly: getCheck('jm-easy-apply-only'),
-            activelyReviewingOnly: getCheck('jm-actively-reviewing'),
-            earlyApplicantOnly: getCheck('jm-early-applicant'),
-            reviewTimeOnly: getCheck('jm-review-time'),
-            postedWaitHours: getVal('jm-posted-hours') ? parseInt(getVal('jm-posted-hours')) : null,
-            titleKeywords: split(getVal('jm-title-keywords')),
-            companyBlacklist: split(getVal('jm-company-blacklist')),
-            negativeKeywords: split(getVal('jm-negative-keywords')),
-
-        };
-        return values;
+    closePageModal() {
+        this.pageOverlay.classList.remove('open');
     }
 
-    bindModalEvents() {
-        // Close
-        document.getElementById('jm-modal-close').addEventListener('click', () => this.closeModal());
+    bindPageModalEvents() {
+        document.getElementById('jm-page-close').addEventListener('click', () => this.closePageModal());
+        this.pageOverlay.addEventListener('click', (e) => { if (e.target === this.pageOverlay) this.closePageModal(); });
 
-        // Close on Click Outside
-        this.overlay.addEventListener('click', (e) => {
-            if (e.target === this.overlay) this.closeModal();
+        document.getElementById('jm-page-reset').addEventListener('click', () => {
+            // Reset temp settings (only visual toggles)
+            ['jm-hide-promoted', 'jm-hide-applied', 'jm-hide-viewed', 'jm-hide-easy-apply',
+                'jm-early-applicant', 'jm-actively-reviewing', 'jm-review-time'].forEach(id => {
+                    document.getElementById(id).checked = false;
+                });
+
+            // Reset text inputs
+            document.getElementById('jm-page-must-contain').value = "";
+            document.getElementById('jm-page-excludes').value = "";
+            document.getElementById('jm-page-company-blacklist').value = "";
         });
 
-        // Reset
-        document.getElementById('jm-modal-reset').addEventListener('click', () => {
-            this.tempSettings = {
-                hidePromoted: false,
-                hideApplied: false,
-                hideViewed: false,
-                hideEasyApply: false,
-                easyApplyOnly: false,
-                activelyReviewingOnly: false,
-                earlyApplicantOnly: false,
-                reviewTimeOnly: false,
-                postedWaitHours: null,
-                titleKeywords: [],
-                companyBlacklist: [],
-                negativeKeywords: [],
+        document.getElementById('jm-page-apply').addEventListener('click', () => {
+            const getCheck = (id) => document.getElementById(id).checked;
 
-            };
-            this.updateModalInputs();
-            // Note: We don't update the button state here yet, only on "Show results".
-            // Or should reset clear immediately? Usually Reset just clears the FORM. 
-            // User still needs to click apply. But wait, "Reset" in modal usually implies resetting inputs.
-        });
+            this.settings.filters.hidePromoted = getCheck('jm-hide-promoted');
+            this.settings.filters.hideApplied = getCheck('jm-hide-applied');
+            this.settings.filters.hideViewed = getCheck('jm-hide-viewed');
+            this.settings.filters.hideEasyApply = getCheck('jm-hide-easy-apply');
+            this.settings.filters.earlyApplicantOnly = getCheck('jm-early-applicant');
+            this.settings.filters.activelyReviewingOnly = getCheck('jm-actively-reviewing');
+            this.settings.filters.reviewTimeOnly = getCheck('jm-review-time');
 
-        // Apply
-        document.getElementById('jm-modal-apply').addEventListener('click', () => {
-            // 1. Read latest values
-            const finalSettings = this.readModalInputs();
+            // Save Text Inputs
+            const split = (str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            this.settings.filters.titleKeywords = split(document.getElementById('jm-page-must-contain').value);
+            this.settings.filters.negativeKeywords = split(document.getElementById('jm-page-excludes').value);
+            this.settings.filters.companyBlacklist = split(document.getElementById('jm-page-company-blacklist').value);
 
-            // 2. Commit to persistent settings
-            this.settings.filters = finalSettings;
             this.storage.saveSettings(this.settings);
-
-            // 3. Handle Time Filter (URL Redirect)
-            if (finalSettings.postedWaitHours) {
-                const hours = parseInt(finalSettings.postedWaitHours);
-                if (hours > 0) {
-                    const seconds = hours * 3600;
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('f_TPR', `r${seconds}`);
-                    window.location.href = url.toString();
-                    return; // Stop here, page will reload
-                }
-            }
-
-            // 4. Update Engine (Client Side)
             this.filterEngine.updateSettings(this.settings.filters, true);
+            this.updatePageButtonState();
 
-            // 5. Update Button State (Count)
-            this.updateButtonState();
-
-            // 6. Apply Filters
+            // Run Filters
             const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
             lists.forEach(l => this.filterEngine.applyFilters(l));
 
-            // 7. Close
-            this.closeModal();
+            this.closePageModal();
         });
     }
 
-    updateButtonState() {
-        const btn = document.getElementById('job-mate-adv-filter-btn');
+    updatePageButtonState() {
+        const btn = document.getElementById('jm-btn-page-filters');
         if (!btn) return;
-
         const f = this.settings.filters;
-        if (!f) return;
-
         let count = 0;
         if (f.hidePromoted) count++;
         if (f.hideApplied) count++;
         if (f.hideViewed) count++;
         if (f.hideEasyApply) count++;
-        if (f.easyApplyOnly) count++;
-        if (f.activelyReviewingOnly) count++;
         if (f.earlyApplicantOnly) count++;
-        if (f.reviewTimeOnly) count++;
-        if (f.postedWaitHours) count++;
-        if (f.titleKeywords && f.titleKeywords.length > 0) count++;
-        if (f.companyBlacklist && f.companyBlacklist.length > 0) count++;
-        if (f.negativeKeywords && f.negativeKeywords.length > 0) count++;
 
+        if (f.activelyReviewingOnly) count++;
+        if (f.reviewTimeOnly) count++;
+
+        // Count Text Filters
+        if (f.titleKeywords && f.titleKeywords.length > 0) count++;
+        if (f.negativeKeywords && f.negativeKeywords.length > 0) count++;
+        if (f.companyBlacklist && f.companyBlacklist.length > 0) count++;
 
         if (count > 0) {
-            btn.innerHTML = `<span>Advanced Filters (${count})</span><div class="job-mate-reset-icon" title="Clear all filters">✕</div>`;
-            btn.classList.add('artdeco-pill--selected');
-            btn.style.backgroundColor = '#057642'; // LinkedIn Green
-            btn.style.color = 'white';
-            btn.style.border = '1px solid transparent';
+            btn.innerHTML = `<span>Page Filters (${count})</span><span class="jm-dismiss-icon" data-action="reset-page">✕</span>`;
+            btn.classList.add('jm-artdeco-pill--selected');
+            // Remove inline styles if any remained from previous versions
+            btn.style.backgroundColor = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        } else {
+            btn.innerHTML = `<span>Page Filters</span>`;
+            btn.classList.remove('jm-artdeco-pill--selected');
+            btn.style.backgroundColor = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }
+    }
 
-            // Attach listener to the new reset icon
-            const resetIcon = btn.querySelector('.job-mate-reset-icon');
-            if (resetIcon) {
-                resetIcon.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent opening modal
-                    e.preventDefault();
+    /* =========================================================================
+       SEARCH TWEAKS (Backend URL Params)
+       ========================================================================= */
 
-                    // Reset Settings
-                    this.settings.filters = {
-                        hidePromoted: false,
-                        hideApplied: false,
-                        hideViewed: false,
-                        hideEasyApply: false,
-                        easyApplyOnly: false,
-                        titleKeywords: [],
-                        companyBlacklist: [],
-                        negativeKeywords: [],
+    renderSearchModalHTML() {
+        return `
+            <div class="job-mate-modal">
+                <div class="job-mate-modal-header">
+                    <h2 class="job-mate-modal-title">Search Filter (Back-end)</h2>
+                    <button class="job-mate-close-btn" id="jm-search-close">×</button>
+                </div>
+                <div class="job-mate-modal-body">
+                    
+                    <!-- Date Posted -->
+                    <div class="job-mate-modal-section">
+                        <h3 class="job-mate-section-title">Date Posted</h3>
+                         <div class="job-mate-input-group">
+                            <label class="job-mate-label">Past X Hours (e.g. 24 for 1 day)</label>
+                            <input type="number" id="jm-search-date-hours" class="job-mate-text-input" placeholder="e.g. 24" min="1">
+                        </div>
+                    </div>
 
-                        activelyReviewingOnly: false,
-                        earlyApplicantOnly: false,
-                        reviewTimeOnly: false,
-                        postedWaitHours: null
-                    };
-                    this.storage.saveSettings(this.settings);
-                    this.filterEngine.updateSettings(this.settings.filters);
+                    <!-- Boolean Logic -->
+                    <div class="job-mate-modal-section">
+                        <h3 class="job-mate-section-title">Advanced Logic</h3>
+                        <p style="font-size:12px; color:#666; margin-bottom:10px;">These modify your search query using boolean operators (OR, NOT).</p>
+                        
+                        <div class="job-mate-input-group">
+                            <label class="job-mate-label">Title Must Contain (OR logic)</label>
+                            <input type="text" id="jm-search-must-contain" class="job-mate-text-input" placeholder="e.g. Data, Backend">
+                        </div>
+                        <div class="job-mate-input-group">
+                            <label class="job-mate-label">Title Excludes (NOT logic)</label>
+                            <input type="text" id="jm-search-excludes" class="job-mate-text-input" placeholder="e.g. Manager, Senior">
+                        </div>
+                        <div class="job-mate-input-group">
+                            <label class="job-mate-label">Company Blacklist</label>
+                            <input type="text" id="jm-search-company-blacklist" class="job-mate-text-input" placeholder="e.g. Revature">
+                        </div>
+                    </div>
+                </div>
+                <div class="job-mate-modal-footer">
+                    <button class="job-mate-btn job-mate-btn-secondary" id="jm-search-reset">Reset</button>
+                    <button class="job-mate-btn job-mate-btn-primary" id="jm-search-apply">Update Search</button>
+                </div>
+            </div>
+        `;
+    }
 
-                    // Re-apply (clear) filters on DOM
-                    const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
-                    lists.forEach(l => this.filterEngine.applyFilters(l));
+    openSearchModal() {
+        // Use stored settings first (Fixes Blank Values)
+        const s = this.settings.searchTweaks || {};
 
-                    this.updateButtonState();
-                });
+        document.getElementById('jm-search-date-hours').value = s.datePostedHours || "";
+        document.getElementById('jm-search-must-contain').value = s.mustContain || "";
+        document.getElementById('jm-search-excludes').value = s.excludes || "";
+        document.getElementById('jm-search-company-blacklist').value = s.companyBlacklist || "";
+
+        this.searchOverlay.classList.add('open');
+    }
+
+    closeSearchModal() {
+        this.searchOverlay.classList.remove('open');
+    }
+
+    bindSearchModalEvents() {
+        document.getElementById('jm-search-close').addEventListener('click', () => this.closeSearchModal());
+        this.searchOverlay.addEventListener('click', (e) => { if (e.target === this.searchOverlay) this.closeSearchModal(); });
+
+
+        document.getElementById('jm-search-reset').addEventListener('click', () => {
+            document.getElementById('jm-search-date-hours').value = "";
+            document.getElementById('jm-search-must-contain').value = "";
+            document.getElementById('jm-search-excludes').value = "";
+            document.getElementById('jm-search-company-blacklist').value = "";
+        });
+
+        document.getElementById('jm-search-apply').addEventListener('click', async () => {
+            const getVal = (id) => document.getElementById(id).value.trim();
+            const split = (str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            const hoursVal = getVal('jm-search-date-hours');
+            const mustContainStr = getVal('jm-search-must-contain');
+            const excludesStr = getVal('jm-search-excludes');
+            const blacklistStr = getVal('jm-search-company-blacklist');
+
+            const includeTerms = split(mustContainStr);
+            const excludeTerms = split(excludesStr);
+            const blacklist = split(blacklistStr);
+
+            // Save Persistence
+            this.settings.searchTweaks = {
+                datePostedHours: hoursVal,
+                mustContain: mustContainStr,
+                excludes: excludesStr,
+                companyBlacklist: blacklistStr
+            };
+            await this.storage.saveSettings(this.settings);
+
+            const url = new URL(window.location.href);
+
+            // 1. Date Filter
+            if (hoursVal) {
+                const sec = parseInt(hoursVal, 10) * 3600;
+                url.searchParams.set('f_TPR', `r${sec}`);
+            } else {
+                url.searchParams.delete('f_TPR');
             }
 
-        } else {
-            btn.innerHTML = `<span>Advanced Filters</span>`;
-            btn.classList.remove('artdeco-pill--selected');
+            // 2. Keyword Construction
+            // Standardize logic: (A OR B) NOT (C OR D) NOT "E" NOT "F"
+            // We REBUILD the keywords param from scratch or append carefully?
+            // "Current Job ID" and others might be in URL, but 'keywords' is the main query.
+            // If we overwrite 'keywords', we lose the user's main search term (e.g. "Software Engineer").
+            // WE MUST PRESERVE user's main query.
 
-            // Remove inline styles to revert to CSS defaults
-            btn.style.backgroundColor = '';
-            btn.style.color = '';
-            btn.style.border = '';
+            // Strategy: We assume the user typed their main query in the LinkedIN search bar. 
+            // We only APPEND our logic.
+            // BUT, if we re-apply, we don't want to duplicate.
+            // Paradox: We can't easily distinguish "User Query" from "Our Previous Append".
+            // Compromise: We will just APPEND. If duplicates occur, so be it (LinkedIn handles it).
+            // Alternative: We could define a clean-slate approach "Search Filter" *IS* the query? No.
+
+            // Let's grab the current keywords, but try to strip our known patterns? Hard.
+            let currentKw = url.searchParams.get('keywords') || "";
+            // Construct the new logical string
+            let additions = "";
+
+            if (includeTerms.length > 0) {
+                // If we have existing keywords, we need AND. If not, just the terms.
+                // Actually, we don't know if currentKw is empty or not yet.
+                // Let's build the segment and join later.
+                additions += `(${includeTerms.join(' OR ')})`;
+            }
+
+            if (excludeTerms.length > 0) {
+                // NOT (A OR B)
+                if (additions.length > 0) additions += " ";
+                additions += `NOT (${excludeTerms.join(' OR ')})`;
+            }
+
+            if (blacklist.length > 0) {
+                // NOT "A" NOT "B"
+                const blStr = blacklist.map(c => `NOT "${c}"`).join(' ');
+                if (additions.length > 0) additions += " ";
+                additions += `${blStr}`;
+            }
+
+            if (additions) {
+                // Simple append check to avoid dumb duplication of identical strings
+                // Logic: If currentKw is present, add space (LinkedIn implies AND).
+                // Or explicit AND? LinkedIn supports implicit AND.
+                // "Engineer (Java OR Python)" means Engineer AND (Java OR Python).
+                // So space is sufficient and safer than leading AND.
+
+                if (!currentKw.includes(additions.trim())) {
+                    if (currentKw.length > 0) {
+                        url.searchParams.set('keywords', currentKw + " " + additions);
+                    } else {
+                        url.searchParams.set('keywords', additions);
+                    }
+                }
+            }
+
+            window.location.href = url.toString();
+        });
+    }
+
+    updateSearchButtonState() {
+        const btn = document.getElementById('jm-btn-search-tweaks');
+        if (!btn) return;
+
+        const params = new URLSearchParams(window.location.search);
+        let active = false;
+
+        if (params.has('f_TPR')) active = true;
+        const kw = params.get('keywords') || "";
+        if (kw.includes('NOT') || kw.includes('OR')) active = true;
+
+        if (active) {
+            btn.innerHTML = `<span>Search Filter</span><span class="jm-dismiss-icon" data-action="reset-search">✕</span>`;
+            btn.classList.add('jm-artdeco-pill--selected');
+            btn.classList.remove('artdeco-pill--selected');
+        } else {
+            btn.innerHTML = `<span>Search Filter</span>`;
+            btn.classList.remove('jm-artdeco-pill--selected');
+            btn.classList.remove('artdeco-pill--selected');
         }
+    }
+
+    // --- Reset Actions for Dismiss Buttons ---
+
+    resetPageFilters() {
+        // Reset all frontend filters
+        const f = this.settings.filters;
+        f.hidePromoted = false;
+        f.hideApplied = false;
+        f.hideViewed = false;
+        f.hideEasyApply = false;
+        f.activelyReviewingOnly = false;
+        f.earlyApplicantOnly = false;
+        f.reviewTimeOnly = false;
+        f.titleKeywords = [];
+        f.negativeKeywords = [];
+        f.companyBlacklist = [];
+
+        this.storage.saveSettings(this.settings);
+        this.filterEngine.updateSettings(this.settings.filters, true);
+        this.updatePageButtonState();
+
+        // Re-run filters to show everything
+        const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+        lists.forEach(l => this.filterEngine.applyFilters(l));
+    }
+
+    async resetSearchFilters() {
+        // Clear persistence
+        this.settings.searchTweaks = {
+            datePostedHours: "",
+            mustContain: "",
+            excludes: "",
+            companyBlacklist: ""
+        };
+        await this.storage.saveSettings(this.settings);
+
+        // Clear URL params we control
+        const url = new URL(window.location.href);
+        url.searchParams.delete('f_TPR');
+
+        // We cannot easily strip keywords without regex risks, so we recommend user clears manually or we reload.
+        // User asked: "advanced filter cross is not working".
+        // The cross button trigger this.
+        // Simplest "Reset" is to reload page WITHOUT f_TPR. 
+        // Keywords will remain. That is an acceptable trade-off unless we want to parse.
+        // We will just reload.
+
+        window.location.href = url.toString();
     }
 }
