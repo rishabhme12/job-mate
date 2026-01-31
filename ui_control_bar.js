@@ -24,8 +24,11 @@ class JobMateControlBar {
         f.hideViewed = false;
         f.hideEasyApply = false;
         f.easyApplyOnly = false;
-        f.easyApplyOnly = false;
-        // f.maxApplicants = null; // KEEPING maxApplicants as it is a text input.
+        f.activelyReviewingOnly = false;
+        f.earlyApplicantOnly = false;
+        f.reviewTimeOnly = false;
+        f.postedWaitHours = null;
+
 
         // Save this "Session Reset" state
         await this.storage.saveSettings(this.settings);
@@ -175,17 +178,22 @@ class JobMateControlBar {
                             ${toggle('jm-hide-viewed', 'Hide Viewed')}
                             ${toggle('jm-easy-apply-only', 'Easy Apply Only')}
                             ${toggle('jm-hide-easy-apply', 'Hide Easy Apply')}
+                            ${toggle('jm-actively-reviewing', 'Actively Reviewing')}
+                            ${toggle('jm-early-applicant', 'Early Applicant')}
+                            ${toggle('jm-review-time', 'Review Time Available')}
                         </div>
                     </div>
 
-                    <!-- Section: Applicants -->
+                    <!-- Section: Time Filter -->
                     <div class="job-mate-modal-section">
-                        <h3 class="job-mate-section-title">Applicants</h3>
+                        <h3 class="job-mate-section-title">Time Filter</h3>
                         <div class="job-mate-input-group">
-                            <label class="job-mate-label">Max Applicants</label>
-                            <input type="number" id="jm-max-applicants" class="job-mate-text-input" placeholder="Any" style="width: 120px;">
+                            <label class="job-mate-label">Posted within X Hours</label>
+                            <input type="number" id="jm-posted-hours" class="job-mate-text-input" placeholder="e.g. 12, 24" style="width: 120px;">
                         </div>
                     </div>
+
+
 
                 </div>
                 <div class="job-mate-modal-footer">
@@ -228,11 +236,16 @@ class JobMateControlBar {
         setCheck('jm-hide-viewed', f.hideViewed);
         setCheck('jm-hide-easy-apply', f.hideEasyApply);
         setCheck('jm-easy-apply-only', f.easyApplyOnly);
+        setCheck('jm-actively-reviewing', f.activelyReviewingOnly);
+        setCheck('jm-early-applicant', f.earlyApplicantOnly);
+        setCheck('jm-review-time', f.reviewTimeOnly);
+
+        setVal('jm-posted-hours', f.postedWaitHours || '');
 
         setVal('jm-title-keywords', join(f.titleKeywords));
         setVal('jm-company-blacklist', join(f.companyBlacklist));
         setVal('jm-negative-keywords', join(f.negativeKeywords));
-        setVal('jm-max-applicants', f.maxApplicants || '');
+
     }
 
     readModalInputs() {
@@ -246,10 +259,14 @@ class JobMateControlBar {
             hideViewed: getCheck('jm-hide-viewed'),
             hideEasyApply: getCheck('jm-hide-easy-apply'),
             easyApplyOnly: getCheck('jm-easy-apply-only'),
+            activelyReviewingOnly: getCheck('jm-actively-reviewing'),
+            earlyApplicantOnly: getCheck('jm-early-applicant'),
+            reviewTimeOnly: getCheck('jm-review-time'),
+            postedWaitHours: getVal('jm-posted-hours') ? parseInt(getVal('jm-posted-hours')) : null,
             titleKeywords: split(getVal('jm-title-keywords')),
             companyBlacklist: split(getVal('jm-company-blacklist')),
             negativeKeywords: split(getVal('jm-negative-keywords')),
-            maxApplicants: getVal('jm-max-applicants') ? parseInt(getVal('jm-max-applicants')) : null
+
         };
         return values;
     }
@@ -271,10 +288,14 @@ class JobMateControlBar {
                 hideViewed: false,
                 hideEasyApply: false,
                 easyApplyOnly: false,
+                activelyReviewingOnly: false,
+                earlyApplicantOnly: false,
+                reviewTimeOnly: false,
+                postedWaitHours: null,
                 titleKeywords: [],
                 companyBlacklist: [],
                 negativeKeywords: [],
-                maxApplicants: null
+
             };
             this.updateModalInputs();
             // Note: We don't update the button state here yet, only on "Show results".
@@ -284,26 +305,36 @@ class JobMateControlBar {
 
         // Apply
         document.getElementById('jm-modal-apply').addEventListener('click', () => {
-            // 1. Read latest values (in case user typed but didn't trigger change event or simple reliance)
+            // 1. Read latest values
             const finalSettings = this.readModalInputs();
 
             // 2. Commit to persistent settings
             this.settings.filters = finalSettings;
             this.storage.saveSettings(this.settings);
 
-            // 3. Update Engine
-            // Explicitly ENABLE filtering now that user has clicked Apply
+            // 3. Handle Time Filter (URL Redirect)
+            if (finalSettings.postedWaitHours) {
+                const hours = parseInt(finalSettings.postedWaitHours);
+                if (hours > 0) {
+                    const seconds = hours * 3600;
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('f_TPR', `r${seconds}`);
+                    window.location.href = url.toString();
+                    return; // Stop here, page will reload
+                }
+            }
+
+            // 4. Update Engine (Client Side)
             this.filterEngine.updateSettings(this.settings.filters, true);
 
-            // 4. Update Button State (Count)
+            // 5. Update Button State (Count)
             this.updateButtonState();
 
-            // 5. Apply Filters
-            // Find container again as references might be stale or dynamic
+            // 6. Apply Filters
             const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
             lists.forEach(l => this.filterEngine.applyFilters(l));
 
-            // 6. Close
+            // 7. Close
             this.closeModal();
         });
     }
@@ -321,10 +352,14 @@ class JobMateControlBar {
         if (f.hideViewed) count++;
         if (f.hideEasyApply) count++;
         if (f.easyApplyOnly) count++;
+        if (f.activelyReviewingOnly) count++;
+        if (f.earlyApplicantOnly) count++;
+        if (f.reviewTimeOnly) count++;
+        if (f.postedWaitHours) count++;
         if (f.titleKeywords && f.titleKeywords.length > 0) count++;
         if (f.companyBlacklist && f.companyBlacklist.length > 0) count++;
         if (f.negativeKeywords && f.negativeKeywords.length > 0) count++;
-        if (f.maxApplicants) count++;
+
 
         if (count > 0) {
             btn.innerHTML = `<span>Advanced Filters (${count})</span><div class="job-mate-reset-icon" title="Clear all filters">✕</div>`;
@@ -350,7 +385,11 @@ class JobMateControlBar {
                         titleKeywords: [],
                         companyBlacklist: [],
                         negativeKeywords: [],
-                        maxApplicants: null
+
+                        activelyReviewingOnly: false,
+                        earlyApplicantOnly: false,
+                        reviewTimeOnly: false,
+                        postedWaitHours: null
                     };
                     this.storage.saveSettings(this.settings);
                     this.filterEngine.updateSettings(this.settings.filters);

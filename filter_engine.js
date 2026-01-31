@@ -39,6 +39,33 @@ class FilterEngine {
     }
 
     /**
+     * Check if a job *Detail View* passes the filters.
+     * This is used for "Lazy Filtering" when the list view lacks data.
+     * @param {Object} data - Scraped data { applicants: string, hasActivelyRecruiting: bool, ... }
+     * @returns {Object} result - { pass: boolean, reason: string }
+     */
+    checkDetail(data) {
+        if (!data) return { pass: true };
+
+
+
+        // 2. Flags
+        if (this.settings.activelyReviewingOnly && !data.hasActivelyRecruiting) {
+            return { pass: false, reason: "Not Recruiting" };
+        }
+
+        if (this.settings.earlyApplicantOnly && !data.hasEarlyApplicant) {
+            return { pass: false, reason: "Late Applicant" };
+        }
+
+        if (this.settings.reviewTimeOnly && !data.hasReviewTime) {
+            return { pass: false, reason: "No Review Time" };
+        }
+
+        return { pass: true };
+    }
+
+    /**
      * Main Apply Function
      * @param {HTMLElement} jobCard - The DOM element of the job card
      * @returns {boolean} - True if job should be VISIBLE, False if HIDDEN
@@ -83,7 +110,24 @@ class FilterEngine {
             if (lowerText.includes('easy apply')) return false;
         }
 
-        // 4. Company Blacklist
+        // 4. Actively Reviewing / Early Applicant / Review Time
+        // Text is available in .job-card-container__job-insight-text
+        if (this.settings.activelyReviewingOnly) {
+            if (!lowerText.includes('actively recruiting') && !lowerText.includes('actively reviewing')) return false;
+        }
+
+        if (this.settings.earlyApplicantOnly) {
+            if (!lowerText.includes('early applicant') && !lowerText.includes('be one of the first')) return false;
+        }
+
+        if (this.settings.reviewTimeOnly) {
+            const hasReviewTime = lowerText.includes('time to hear back') ||
+                lowerText.includes('responds within') ||
+                lowerText.includes('company review time');
+            if (!hasReviewTime) return false;
+        }
+
+        // 5. Company Blacklist
         if (this.settings.companyBlacklist && this.settings.companyBlacklist.length > 0) {
             // Find company name element specifically to avoid false positives
             // Selectors: .job-card-container__primary-description, .artdeco-entity-lockup__subtitle
@@ -99,7 +143,7 @@ class FilterEngine {
             }
         }
 
-        // 5. Title Keywords (Precision Search)
+        // 6. Title Keywords (Precision Search)
         // Find title element
         const titleEl = jobCard.querySelector('.job-card-list__title') ||
             jobCard.querySelector('.job-card-container__link') ||
@@ -119,18 +163,9 @@ class FilterEngine {
             }
         }
 
-        // 6. Applicant Count (Best Effort)
-        if (this.settings.maxApplicants) {
-            // "123 applicants" or "Over 200 applicants"
-            const applicantMatch = text.match(/(\d+)\s+applicants/);
-            if (applicantMatch) {
-                const count = parseInt(applicantMatch[1], 10);
-                if (count > this.settings.maxApplicants) {
-                    console.log(`JobMate: Hidden (Max Applicants: ${count} > ${this.settings.maxApplicants})`);
-                    return false;
-                }
-            }
-        }
+        // 7. Applicants (Removed from List View)
+        // Count is not reliably available in the list view.
+        // filtering is handled by the lazy check in Detail View.
 
         return true;
     }

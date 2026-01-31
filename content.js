@@ -146,7 +146,7 @@ const InsightPanel = {
 
         const data = this.scrape(layoutType);
 
-        if (data.applicants === 'N/A' && data.size === 'N/A' && data.industry === 'N/A' && data.linkedinCount === 'N/A') {
+        if (data.size === 'N/A' && data.industry === 'N/A' && data.linkedinCount === 'N/A') {
             if (Date.now() - lastClickTime < 2500) {
                 setTimeout(() => this.run(), 200);
                 return;
@@ -157,15 +157,8 @@ const InsightPanel = {
     },
 
     scrape(layoutType) {
-        const data = { applicants: 'N/A', industry: 'N/A', size: 'N/A', linkedinCount: 'N/A' };
-        const wrapperSelector = layoutType === 'standalone' ? '.jobs-unified-top-card' : '.jobs-search__job-details--wrapper';
-        const wrapper = document.querySelector(wrapperSelector) || document.body;
-        const topText = wrapper.innerText.substring(0, 2000);
+        const data = { industry: 'N/A', size: 'N/A', linkedinCount: 'N/A' };
 
-        const appMatch = topText.match(/(\d+|Over \d+)\s+applicants/) || topText.match(/(\d+)\s+people\s+clicked\s+apply/);
-        if (appMatch) {
-            data.applicants = appMatch[0].replace('people clicked apply', 'Clicks').replace('applicants', 'Applicants');
-        }
 
         const headings = document.getElementsByTagName('h2');
         for (let i = 0; i < headings.length; i++) {
@@ -184,6 +177,11 @@ const InsightPanel = {
                 break;
             }
         }
+        const lowerText = topText.toLowerCase();
+        data.hasActivelyRecruiting = lowerText.includes('actively recruiting');
+        data.hasEarlyApplicant = lowerText.includes('early applicant') || lowerText.includes('be one of the first');
+        data.hasReviewTime = lowerText.includes('time to hear back') || lowerText.includes('responds within');
+
         return data;
     },
 
@@ -202,13 +200,28 @@ const InsightPanel = {
             }
         };
 
-        appendTag(data.applicants, 'applicants', '👥');
+
         appendTag(data.size, 'company', '🏢');
         appendTag(data.industry, 'industry', '🏭');
         appendTag(data.linkedinCount, 'company', '🔗');
 
         if (row.innerHTML === '') {
             appendTag('Scanning...', 'company', '⏳');
+        }
+
+        // Lazy Filter Validation
+        if (window.jmFilterEngine) {
+            const check = window.jmFilterEngine.checkDetail(data);
+            if (!check.pass) {
+                const errorSpan = document.createElement('span');
+                errorSpan.className = 'job-mate-stat-tag';
+                // Inline styles for high visibility error
+                errorSpan.style.backgroundColor = '#fff0f0';
+                errorSpan.style.color = '#d32f2f';
+                errorSpan.style.border = '1px solid #d32f2f';
+                errorSpan.innerText = `⚠️ ${check.reason}`;
+                row.appendChild(errorSpan);
+            }
         }
     }
 };
@@ -279,6 +292,7 @@ setupClickListeners();
 // Initialize Modules
 const jmStorage = JobMateStorage;
 const jmFilterEngine = new FilterEngine();
+window.jmFilterEngine = jmFilterEngine; // Expose for InsightPanel
 const jmControlBar = new JobMateControlBar(jmStorage, jmFilterEngine);
 
 // Start UI with robust retry logic
