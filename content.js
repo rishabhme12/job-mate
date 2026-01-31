@@ -325,10 +325,14 @@ JobMate.handleMutation = function () {
     originalHandleMutation.call(JobMate);
 
     // Run Filter Logic
-    const listContainers = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
-    listContainers.forEach(container => {
-        jmFilterEngine.applyFilters(container);
-    });
+    // OPTIMIZATION: Do not run filters if user just clicked (navigation).
+    // This prevents the job from vanishing immediately when "Hide Viewed" is ON.
+    if (Date.now() - lastClickTime > 1500 && !isNavigating) {
+        const listContainers = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+        listContainers.forEach(container => {
+            jmFilterEngine.applyFilters(container);
+        });
+    }
 
     // Attempt Injection (Reactive)
     jmControlBar.inject();

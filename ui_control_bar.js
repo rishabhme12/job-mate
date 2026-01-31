@@ -15,10 +15,29 @@ class JobMateControlBar {
 
     async init() {
         this.settings = await this.storage.getSettings();
+
+        // RESET ON REFRESH: Force all specific job-property toggles to OFF.
+        // We keep text-based filters (Keywords, Blacklist) as they are likely long-term preferences.
+        const f = this.settings.filters;
+        f.hidePromoted = false;
+        f.hideApplied = false;
+        f.hideViewed = false;
+        f.hideEasyApply = false;
+        f.easyApplyOnly = false;
+        f.easyApplyOnly = false;
+        // f.maxApplicants = null; // KEEPING maxApplicants as it is a text input.
+
+        // Save this "Session Reset" state
+        await this.storage.saveSettings(this.settings);
         this.filterEngine.updateSettings(this.settings.filters);
+
         if (this.inject()) {
             this.updateButtonState();
         }
+
+        // NOTE: We do NOT call filterEngine.applyFilters() here.
+        // Filters should only apply when user clicks "Show Results" or if we decide to auto-apply persistent text filters later.
+        // For now, per requirement: "filters shouldnt be in applied state unless user got and sbmit".
     }
 
     inject() {
@@ -273,7 +292,8 @@ class JobMateControlBar {
             this.storage.saveSettings(this.settings);
 
             // 3. Update Engine
-            this.filterEngine.updateSettings(this.settings.filters);
+            // Explicitly ENABLE filtering now that user has clicked Apply
+            this.filterEngine.updateSettings(this.settings.filters, true);
 
             // 4. Update Button State (Count)
             this.updateButtonState();

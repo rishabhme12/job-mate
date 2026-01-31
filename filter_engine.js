@@ -8,11 +8,13 @@ class FilterEngine {
         // Cache regexes for performance
         this.positiveRegex = null;
         this.negativeRegex = null;
+        this.isFilteringEnabled = false; // By default, filtering is OFF until "Show results" is clicked
         this.updateRegex();
     }
 
-    updateSettings(newSettings) {
+    updateSettings(newSettings, enableFiltering = false) {
         this.settings = newSettings;
+        if (enableFiltering) this.isFilteringEnabled = true;
         this.updateRegex();
     }
 
@@ -139,6 +141,7 @@ class FilterEngine {
      */
     applyFilters(listContainer) {
         if (!listContainer) return;
+        if (!this.isFilteringEnabled) return; // Respect the flag!
 
         // Identify job items. Selectors vary between Search and Feed.
         // Search: .jobs-search-results__list-item
