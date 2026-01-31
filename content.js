@@ -273,7 +273,35 @@ const JobMate = {
 };
 
 // --- Init ---
+// --- Init ---
 setupClickListeners();
+
+// Initialize Modules
+const jmStorage = JobMateStorage;
+const jmFilterEngine = new FilterEngine();
+const jmControlBar = new JobMateControlBar(jmStorage, jmFilterEngine);
+
+// Start UI with robust retry logic
+// LinkedIn often lazily loads the filter bar. We need to wait for it.
+(async function initJobMate() {
+    await jmControlBar.init();
+
+    // Initial Attempt
+    let injected = jmControlBar.inject();
+
+    // Retry Loop (up to 10 seconds)
+    if (!injected) {
+        let attempts = 0;
+        const interval = setInterval(() => {
+            attempts++;
+            injected = jmControlBar.inject();
+            if (injected || attempts > 20) { // 20 * 500ms = 10s
+                clearInterval(interval);
+                if (injected) console.log("JobMate: Injection successful after retry.");
+            }
+        }, 500);
+    }
+})();
 
 const runDebounced = debounce(() => JobMate.handleMutation(), 200);
 const runThrottled = throttle(() => JobMate.handleMutation(), 100);
@@ -290,4 +318,20 @@ const observer = new MutationObserver((mutations) => {
 
 observer.observe(document.body, { childList: true, subtree: true });
 
-console.log("JobMate: Content Script (v9.1 Throttled Fixed) Loaded");
+// Override handleMutation to also run filters
+const originalHandleMutation = JobMate.handleMutation;
+JobMate.handleMutation = function () {
+    // Run original logic (Insight Panel)
+    originalHandleMutation.call(JobMate);
+
+    // Run Filter Logic
+    const listContainers = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+    listContainers.forEach(container => {
+        jmFilterEngine.applyFilters(container);
+    });
+
+    // Attempt Injection (Reactive)
+    jmControlBar.inject();
+};
+
+console.log("JobMate: Content Script (v10.1 Event-Driven) Loaded");

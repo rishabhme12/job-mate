@@ -5,7 +5,8 @@
   "description": "Tag LinkedIn jobs with their engineering type using on-device AI.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https:;"
@@ -26,6 +27,9 @@
         "https://www.linkedin.com/*"
       ],
       "js": [
+        "storage.js",
+        "filter_engine.js",
+        "ui_control_bar.js",
         "keyword_engine.js",
         "content.js"
       ],
