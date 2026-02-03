@@ -7,12 +7,12 @@ const KEYWORD_BUCKETS = {
     'Backend': ['backend', 'back-end', 'java', 'spring', 'python', 'django', 'flask', 'fastapi', 'node', 'express', 'nestjs', 'golang', 'go lang', 'ruby', 'rails', 'php', 'laravel', 'c#', '.net', 'sql', 'database', 'postgresql', 'mysql', 'redis', 'api', 'microservices', 'server-side', 'elasticsearch', 'opensearch', 'graphql'],
     'Frontend': ['frontend', 'front-end', 'javascript', 'typescript', 'react', 'next.js', 'vue', 'angular', 'svelte', 'html', 'css', 'tailwind', 'sass', 'webpack', 'vite', 'redux', 'ui/ux', 'web design', 'figma'],
     'Mobile': ['mobile', 'ios', 'android', 'swift', 'kotlin', 'flutter', 'react native', 'dart', 'objective-c', 'app developer', 'mobile developer'],
-    'Data Engineering': ['data engineer', 'big data', 'spark', 'pyspark', 'hadoop', 'kafka', 'airflow', 'etl', 'hivesql', 'snowflake', 'databricks', 'warehouse', 'lakehouse', 'delta lake', 'iceberg', 'redshift', 'dbt', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'informatica', 'iics', 'powercenter', 'scala', 'flink', 'data platform'],
-    'Data Analytics': ['data analyst', 'business analyst', 'business intelligence', 'bi', 'tableau', 'power bi', 'looker', 'quicksight', 'dashboard', 'visualization', 'analytics', 'reporting', 'excel', 'sheets', 'statistics', 'a/b testing', 'mixpanel'],
-    'Data Science': ['data scientist', 'data science', 'pandas', 'numpy', 'scipy', 'scikit-learn', 'matplotlib', 'seaborn', 'jupyter', 'modeling', 'predictive', 'statistical', 'r programming', 'mathematics'],
-    'DevOps': ['devops', 'sre', 'site reliability', 'cloud', 'aws', 'amazon web services', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'ansible', 'jenkins', 'ci/cd', 'linux', 'bash', 'scripting', 'infrastructure', 'sysadmin', 'prometheus', 'grafana', 'datadog', 'elk'],
-    'Embedded/Systems': ['embedded', 'firmware', 'kernel', 'driver', 'dpdk', 'tcp/ip', 'rtos', 'microcontroller', 'fpga', 'verilog', 'assembly', 'distributed systems', 'low latency'],
-    'AI/ML': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'nlp', 'computer vision', 'pytorch', 'tensorflow', 'keras', 'hugging face', 'llm', 'generative ai', 'rag', 'transformer', 'neural network'],
+    'Data Engineering': ['data engineer', 'big data', 'spark', 'pyspark', 'hadoop', 'kafka', 'airflow', 'etl', 'hivesql', 'snowflake', 'databricks', 'warehouse', 'lakehouse', 'delta lake', 'iceberg', 'redshift', 'dbt', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'informatica', 'iics', 'powercenter', 'scala', 'flink', 'data platform', 'python', 'sql', 'postgresql', 'nosql', 'database', 'api', 'pandas', 'numpy', 'scraping', 'scrapy', 'web scraping'],
+    'Data Analytics': ['data analyst', 'business analyst', 'business intelligence', 'bi', 'tableau', 'power bi', 'looker', 'quicksight', 'dashboard', 'visualization', 'analytics', 'reporting', 'excel', 'sheets', 'statistics', 'a/b testing', 'mixpanel', 'sql', 'python'],
+    'Data Science': ['data scientist', 'data science', 'pandas', 'numpy', 'scipy', 'scikit-learn', 'matplotlib', 'seaborn', 'jupyter', 'modeling', 'predictive', 'statistical', 'r programming', 'mathematics', 'python', 'sql'],
+    'DevOps': ['devops', 'sre', 'site reliability', 'cloud', 'aws', 'amazon web services', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'ansible', 'jenkins', 'ci/cd', 'linux', 'bash', 'scripting', 'infrastructure', 'sysadmin', 'prometheus', 'grafana', 'datadog', 'elk', 'python', 'bash'],
+    'Embedded/Systems': ['embedded', 'firmware', 'kernel', 'driver', 'dpdk', 'tcp/ip', 'rtos', 'microcontroller', 'fpga', 'verilog', 'assembly', 'distributed systems', 'low latency', 'c', 'c++'],
+    'AI/ML': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'nlp', 'computer vision', 'pytorch', 'tensorflow', 'keras', 'hugging face', 'llm', 'generative ai', 'rag', 'transformer', 'neural network', 'python'],
     'QA': ['qa', 'quality assurance', 'test', 'automation', 'selenium', 'cypress', 'playwright', 'junit', 'pytest', 'manual testing', 'sdet'],
     'Security': ['security', 'cyber', 'infosec', 'penetration', 'vulnerability', 'cryptography', 'network security', 'ciso', 'soc'],
     'Product': ['product manager', 'product owner', 'technical product manager', 'roadmap', 'agile', 'scrum', 'user stories', 'backlog', 'stakeholder'],
@@ -25,7 +25,7 @@ const KEYWORD_BUCKETS = {
 // If description is short (scraper failed), we rely 100% on Title.
 // If description is long, we let the Body content override the Title if there's enough evidence.
 const TITLE_ONLY_WEIGHT = 100;
-const TITLE_HINT_WEIGHT = 20;  // Title is just a hint if we have body text
+const TITLE_HINT_WEIGHT = 40;  // Title is just a hint if we have body text
 const BODY_MATCH_WEIGHT = 2;   // Every body keyword is worth 2 points
 
 class KeywordEngine {

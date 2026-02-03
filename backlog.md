@@ -71,3 +71,14 @@ content.js
 Viewed Dimmer: CSS opacity rule.
 C. Data Extraction
 Detail Observer: When #job-details text changes, re-run scraper for Applicant/Company stats.
+
+
+Improvemtns
+(world recommend trying top 5 other extensions)
+1. Search filter-->Pro search and place next to searc icon - also remove active and cross icon as ot may not makes sense (or rather we can prefill the values based on url)
+2. Hide reposted filter
+3. check if hide easy apply can be backend
+4. mainatain list of blocked companies
+5. viewed filter still refreshing - bug
+6. Bug - page filter still qctive stae on reload even though its not applied which is okay
+6. check if saved jobs can be added as filter fe or be
