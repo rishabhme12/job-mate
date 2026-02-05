@@ -82,3 +82,7 @@ Improvemtns
 5. viewed filter still refreshing - bug
 6. Bug - page filter still qctive stae on reload even though its not applied which is okay
 6. check if saved jobs can be added as filter fe or be
+7. button colliding with other buttons so we need to think right positioning
+8. think about making a development system - which is conservative like engineering team - it plans, design and execute write test cases, maintaomn docs, regression test and qa sign off before giving prod green light. Also daily/weekly regresison testing plan - automated
+9. think how we can make whole development -  linkedin in ui agnostic or atleast be safe most of the time
+10. Add these filters at other places of job listing not just job search
