@@ -9,6 +9,7 @@ class FilterEngine {
         this.positiveRegex = null;
         this.negativeRegex = null;
         this.isFilteringEnabled = false; // By default, filtering is OFF until "Show results" is clicked
+        this.suppressViewedApplied = false; // Sticky mode: prevent hide-viewed/applied during a session
         this.updateRegex();
     }
 
@@ -16,6 +17,10 @@ class FilterEngine {
         this.settings = newSettings;
         if (enableFiltering) this.isFilteringEnabled = true;
         this.updateRegex();
+    }
+
+    setStickyViewedApplied(enabled) {
+        this.suppressViewedApplied = !!enabled;
     }
 
     updateRegex() {
@@ -70,9 +75,12 @@ class FilterEngine {
      * @param {HTMLElement} jobCard - The DOM element of the job card
      * @returns {boolean} - True if job should be VISIBLE, False if HIDDEN
      */
-    shouldShowJob(jobCard) {
+    shouldShowJob(jobCard, options = {}) {
         const text = jobCard.innerText;
         const lowerText = text.toLowerCase();
+        const ignoreSticky = !!options.ignoreStickyViewedApplied;
+        const isSessionViewed = jobCard.dataset && jobCard.dataset.jmSessionViewed === '1';
+        const allowViewedAppliedFilter = !this.suppressViewedApplied || ignoreSticky || !isSessionViewed;
 
         // 1. Ghost Protocol: Promoted
         if (this.settings.hidePromoted) {
@@ -90,13 +98,13 @@ class FilterEngine {
         }
 
         // 2. Ghost Protocol: Applied / Viewed
-        if (this.settings.hideApplied) {
+        if (this.settings.hideApplied && allowViewedAppliedFilter) {
             if (lowerText.includes('applied')) return false;
             // Also check for specific "Applied" checkmark icon if text is missing?
             // Usually text "Applied X days ago" is present.
         }
 
-        if (this.settings.hideViewed) {
+        if (this.settings.hideViewed && allowViewedAppliedFilter) {
             if (lowerText.includes('viewed')) return false;
         }
 
@@ -174,7 +182,7 @@ class FilterEngine {
      * Run the filter on a container of jobs
      * @param {HTMLElement} listContainer 
      */
-    applyFilters(listContainer) {
+    applyFilters(listContainer, options = {}) {
         if (!listContainer) return;
         if (!this.isFilteringEnabled) return; // Respect the flag!
 
@@ -200,7 +208,7 @@ class FilterEngine {
                 return;
             }
 
-            const show = this.shouldShowJob(item);
+            const show = this.shouldShowJob(item, options);
             if (show) {
                 item.classList.remove('job-mate-hidden');
             } else {

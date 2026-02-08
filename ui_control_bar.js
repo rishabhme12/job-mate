@@ -289,7 +289,9 @@ class JobMateControlBar {
 
             // Run Filters
             const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
-            lists.forEach(l => this.filterEngine.applyFilters(l));
+            this.filterEngine.setStickyViewedApplied(false);
+            lists.forEach(l => this.filterEngine.applyFilters(l, { ignoreStickyViewedApplied: true }));
+            this.filterEngine.setStickyViewedApplied(true);
 
             this.closePageModal();
         });

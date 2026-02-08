@@ -5,6 +5,7 @@ let debounceTimer = null;
 let lastClickTime = 0;
 let isNavigating = false;
 let lastScrapedTitle = '';
+let pendingStickyEnable = false;
 
 // --- Performance Utilities ---
 function debounce(func, wait) {
@@ -246,6 +247,7 @@ function setupClickListeners() {
             isNavigating = true;
             lastClickTime = Date.now();
             console.log("JobMate: Click detected");
+            jobCard.dataset.jmSessionViewed = '1';
 
             const rightPaneTitle = document.querySelector('.job-details-jobs-unified-top-card__job-title h1');
             if (rightPaneTitle) {
@@ -333,6 +335,14 @@ const runThrottled = throttle(() => JobMate.handleMutation(), 100);
 const observer = new MutationObserver((mutations) => {
     if (!window.location.href.includes('/jobs/')) return;
 
+    if (window.location.href !== lastUrl) {
+        lastUrl = window.location.href;
+        if (window.jmFilterEngine) {
+            window.jmFilterEngine.setStickyViewedApplied(false);
+            pendingStickyEnable = true;
+        }
+    }
+
     if (Date.now() - lastClickTime < 2500) {
         runThrottled();
     } else {
@@ -356,6 +366,10 @@ JobMate.handleMutation = function () {
         listContainers.forEach(container => {
             jmFilterEngine.applyFilters(container);
         });
+    }
+    if (pendingStickyEnable) {
+        jmFilterEngine.setStickyViewedApplied(true);
+        pendingStickyEnable = false;
     }
 
     // Attempt Injection (Reactive)
