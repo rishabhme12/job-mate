@@ -146,7 +146,7 @@ class JobMateControlBar {
         return `
             <div class="job-mate-bar-header" style="display:flex; gap:8px;">
                 <button id="jm-btn-search-tweaks" class="jm-artdeco-pill">
-                    <span>Pro Search</span>
+                    <span>Freshness</span>
                 </button>
                 <button id="jm-btn-page-filters" class="jm-artdeco-pill">
                     <span>Page Filters</span>
@@ -340,7 +340,7 @@ class JobMateControlBar {
         return `
             <div class="job-mate-modal">
                 <div class="job-mate-modal-header">
-                    <h2 class="job-mate-modal-title">Pro Search (Advanced)</h2>
+                    <h2 class="job-mate-modal-title">Freshness</h2>
                     <button class="job-mate-close-btn" id="jm-search-close">×</button>
                 </div>
                 <div class="job-mate-modal-body">
@@ -353,25 +353,6 @@ class JobMateControlBar {
                             <input type="number" id="jm-search-date-hours" class="job-mate-text-input" placeholder="e.g. 24" min="1">
                         </div>
                     </div>
-
-                    <!-- Boolean Logic -->
-                    <div class="job-mate-modal-section">
-                        <h3 class="job-mate-section-title">Advanced Logic</h3>
-                        <p style="font-size:12px; color:#666; margin-bottom:10px;">These modify your search query using boolean operators (OR, NOT).</p>
-                        
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Title Must Contain (OR logic)</label>
-                            <input type="text" id="jm-search-must-contain" class="job-mate-text-input" placeholder="e.g. Data, Backend">
-                        </div>
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Title Excludes (NOT logic)</label>
-                            <input type="text" id="jm-search-excludes" class="job-mate-text-input" placeholder="e.g. Manager, Senior">
-                        </div>
-                        <div class="job-mate-input-group">
-                            <label class="job-mate-label">Company Blacklist</label>
-                            <input type="text" id="jm-search-company-blacklist" class="job-mate-text-input" placeholder="e.g. Revature">
-                        </div>
-                    </div>
                 </div>
                 <div class="job-mate-modal-footer">
                     <button class="job-mate-btn job-mate-btn-secondary" id="jm-search-reset">Reset</button>
@@ -382,15 +363,8 @@ class JobMateControlBar {
     }
 
     openSearchModal() {
-        // --- Auto-Population Logic (User Request) ---
-        // 1. Parse URL Params
         const params = new URLSearchParams(window.location.search);
-
         let hoursVal = "";
-        let mustContainVal = "";
-        let excludesVal = "";
-
-        // Date Posted (f_TPR)
         const t = params.get('f_TPR');
         if (t && t.startsWith('r')) {
             const sec = parseInt(t.substring(1), 10);
@@ -398,50 +372,13 @@ class JobMateControlBar {
                 hoursVal = Math.round(sec / 3600).toString();
             }
         }
-
-        // Keywords Extraction (Best Effort)
-        // Format: "Engineer (Java OR Python)" -> Must Contain: "Java, Python" if extracted?
-        // Actually user request says "populate fields... based on current page url".
-        // Extracting existing complex boolean logic is hard to map back perfectly to our UI fields.
-        // But we can try to extract explicit "NOT" and "OR" groups.
-
-        const kw = params.get('keywords') || "";
-
-        // Match NOT (...)
-        // Regex for NOT (A OR B) or NOT "A" is tricky because of nesting.
-        // We will assume a simple structure since we are the ones generating it mostly.
-        // Or if user typed it.
-
-        // Simple extraction strategy:
-        // 1. Look for NOT "..." or NOT (...)
-        // 2. Look for (...) implied OR.
-
-        // For now, let's just use the stored settings if they exist, which mimics "persistence".
-        // But the user asked to populate based on *URL*.
-        // If we only use settings, and user navigates away and comes back, settings might be stale compared to URL?
-        // No, settings are better because we saved them.
-        // BUT if user *modifies* url manually, settings are out of sync.
-        // Let's prefer Settings *if* they match the URL roughly? 
-        // User asked specifically "populate fields within pro search based n cyrrent page url".
-
-        // Let's rely on Settings for now as it's safer than writing a full Boolean parser.
-        // If settings are empty, we might try to guess.
-
         const s = this.settings.searchTweaks || {};
-
-        // Override with URL data if obvious
         if (hoursVal) {
             s.datePostedHours = hoursVal;
         } else if (!params.has('f_TPR')) {
-            // URL has no date, so clear setting
             s.datePostedHours = "";
         }
-
         document.getElementById('jm-search-date-hours').value = s.datePostedHours || "";
-        document.getElementById('jm-search-must-contain').value = s.mustContain || "";
-        document.getElementById('jm-search-excludes').value = s.excludes || "";
-        document.getElementById('jm-search-company-blacklist').value = s.companyBlacklist || "";
-
         this.searchOverlay.classList.add('open');
     }
 
@@ -456,98 +393,20 @@ class JobMateControlBar {
 
         document.getElementById('jm-search-reset').addEventListener('click', () => {
             document.getElementById('jm-search-date-hours').value = "";
-            document.getElementById('jm-search-must-contain').value = "";
-            document.getElementById('jm-search-excludes').value = "";
-            document.getElementById('jm-search-company-blacklist').value = "";
         });
 
         document.getElementById('jm-search-apply').addEventListener('click', async () => {
-            const getVal = (id) => document.getElementById(id).value.trim();
-            const split = (str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0);
-
-            const hoursVal = getVal('jm-search-date-hours');
-            const mustContainStr = getVal('jm-search-must-contain');
-            const excludesStr = getVal('jm-search-excludes');
-            const blacklistStr = getVal('jm-search-company-blacklist');
-
-            const includeTerms = split(mustContainStr);
-            const excludeTerms = split(excludesStr);
-            const blacklist = split(blacklistStr);
-
-            // Save Persistence
-            this.settings.searchTweaks = {
-                datePostedHours: hoursVal,
-                mustContain: mustContainStr,
-                excludes: excludesStr,
-                companyBlacklist: blacklistStr
-            };
+            const hoursVal = document.getElementById('jm-search-date-hours').value.trim();
+            this.settings.searchTweaks = { datePostedHours: hoursVal };
             await this.storage.saveSettings(this.settings);
 
             const url = new URL(window.location.href);
-
-            // 1. Date Filter
             if (hoursVal) {
                 const sec = parseInt(hoursVal, 10) * 3600;
                 url.searchParams.set('f_TPR', `r${sec}`);
             } else {
                 url.searchParams.delete('f_TPR');
             }
-
-            // 2. Keyword Construction
-            // Standardize logic: (A OR B) NOT (C OR D) NOT "E" NOT "F"
-            // We REBUILD the keywords param from scratch or append carefully?
-            // "Current Job ID" and others might be in URL, but 'keywords' is the main query.
-            // If we overwrite 'keywords', we lose the user's main search term (e.g. "Software Engineer").
-            // WE MUST PRESERVE user's main query.
-
-            // Strategy: We assume the user typed their main query in the LinkedIN search bar. 
-            // We only APPEND our logic.
-            // BUT, if we re-apply, we don't want to duplicate.
-            // Paradox: We can't easily distinguish "User Query" from "Our Previous Append".
-            // Compromise: We will just APPEND. If duplicates occur, so be it (LinkedIn handles it).
-            // Alternative: We could define a clean-slate approach "Search Filter" *IS* the query? No.
-
-            // Let's grab the current keywords, but try to strip our known patterns? Hard.
-            let currentKw = url.searchParams.get('keywords') || "";
-            // Construct the new logical string
-            let additions = "";
-
-            if (includeTerms.length > 0) {
-                // If we have existing keywords, we need AND. If not, just the terms.
-                // Actually, we don't know if currentKw is empty or not yet.
-                // Let's build the segment and join later.
-                additions += `(${includeTerms.join(' OR ')})`;
-            }
-
-            if (excludeTerms.length > 0) {
-                // NOT (A OR B)
-                if (additions.length > 0) additions += " ";
-                additions += `NOT (${excludeTerms.join(' OR ')})`;
-            }
-
-            if (blacklist.length > 0) {
-                // NOT "A" NOT "B"
-                const blStr = blacklist.map(c => `NOT "${c}"`).join(' ');
-                if (additions.length > 0) additions += " ";
-                additions += `${blStr}`;
-            }
-
-            if (additions) {
-                // Simple append check to avoid dumb duplication of identical strings
-                // Logic: If currentKw is present, add space (LinkedIn implies AND).
-                // Or explicit AND? LinkedIn supports implicit AND.
-                // "Engineer (Java OR Python)" means Engineer AND (Java OR Python).
-                // So space is sufficient and safer than leading AND.
-
-                if (!currentKw.includes(additions.trim())) {
-                    if (currentKw.length > 0) {
-                        url.searchParams.set('keywords', currentKw + " " + additions);
-                    } else {
-                        url.searchParams.set('keywords', additions);
-                    }
-                }
-            }
-
             window.location.href = url.toString();
         });
     }
@@ -556,7 +415,7 @@ class JobMateControlBar {
         const btn = document.getElementById('jm-btn-search-tweaks');
         if (!btn) return;
 
-        // No active state for Pro Search as requested ("shouldnt be any actice state")
+        // No active state for Freshness
         // Just ensure it's clean
         btn.classList.remove('jm-artdeco-pill--selected');
         btn.classList.remove('artdeco-pill--selected');
@@ -588,13 +447,7 @@ class JobMateControlBar {
     }
 
     async resetSearchFilters() {
-        // Clear persistence
-        this.settings.searchTweaks = {
-            datePostedHours: "",
-            mustContain: "",
-            excludes: "",
-            companyBlacklist: ""
-        };
+        this.settings.searchTweaks = { datePostedHours: "" };
         await this.storage.saveSettings(this.settings);
 
         // Clear URL params we control

@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Backend Engineer",
+    "description": "We build scalable APIs and microservices using Java, Spring Boot, and PostgreSQL. You will work on our core platform, design database schemas, and integrate with Redis and Elasticsearch. Experience with REST and GraphQL required.",
+    "expectedTag": "Backend"
+  },
+  {
+    "title": "Software Engineer - Platform",
+    "description": "Design and develop backend services in Go and Python. Work with MySQL, PostgreSQL, and Kafka. Build APIs and maintain our server-side infrastructure. We use Docker and Kubernetes in AWS. You will work on our core platform and integrate with internal services.",
+    "expectedTag": "Backend"
+  },
+  {
+    "title": "Frontend Engineer",
+    "description": "Build user interfaces with React, TypeScript, and Next.js. Work with designers using Figma. Strong CSS, Tailwind, and responsive web design. Experience with Redux and Vite.",
+    "expectedTag": "Frontend"
+  },
+  {
+    "title": "Senior Frontend Developer",
+    "description": "Create beautiful web experiences with JavaScript, Vue, and modern CSS. You will own our design system and work with Angular and Svelte on various products. HTML, SASS, and Webpack experience required.",
+    "expectedTag": "Frontend"
+  },
+  {
+    "title": "Full Stack Engineer",
+    "description": "We need a fullstack developer who can work on both our React frontend and Node.js/Express backend. You will build features end-to-end, from database to UI. PostgreSQL and REST APIs.",
+    "expectedTag": "Fullstack"
+  },
+  {
+    "title": "Software Engineer",
+    "description": "Full-stack role: build web applications with React and Node. You will work on the frontend with TypeScript and the backend with Express and NestJS. MongoDB and Redis. Agile team. End-to-end feature development from database to UI.",
+    "expectedTag": "Fullstack"
+  },
+  {
+    "title": "Data Engineer",
+    "description": "Build and maintain ETL pipelines using Apache Spark, Airflow, and Python. Work with Snowflake, Databricks, and dbt. Data warehouse and lakehouse architecture. SQL and Scala. Experience with Kafka and Redshift.",
+    "expectedTag": "Data Engineering"
+  },
+  {
+    "title": "Software Engineer - Data Platform",
+    "description": "We are looking for a software engineer to build our data platform. You will develop ETL pipelines, work with Spark and PySpark, and manage data in our warehouse. Python, SQL, Pandas, and Airflow. Integrate APIs and build pipelines for analytics.",
+    "expectedTag": "Data Engineering"
+  },
+  {
+    "title": "Senior Software Engineer",
+    "description": "Join our data engineering team. Build scalable data pipelines with Kafka, Airflow, and Python. Work with big data technologies including Hadoop and Hive. ETL design, data warehouse, and Databricks. SQL and database expertise required.",
+    "expectedTag": "Data Engineering"
+  },
+  {
+    "title": "Data Engineer - ETL",
+    "description": "Design ETL pipelines using Informatica, dbt, and Glue. Work with Redshift, Delta Lake, and Iceberg. Python, SQL, and Scala. Data platform and warehouse experience.",
+    "expectedTag": "Data Engineering"
+  },
+  {
+    "title": "Data Analyst",
+    "description": "Create dashboards and reports in Tableau and Power BI. Business intelligence and analytics. SQL and Excel. A/B testing and statistics. Work with stakeholders on visualization and reporting.",
+    "expectedTag": "Data Analytics"
+  },
+  {
+    "title": "Data Scientist",
+    "description": "Build predictive models using Python, scikit-learn, and PyTorch. Statistical analysis, Jupyter notebooks, pandas and numpy. Mathematics and machine learning. R programming is a plus.",
+    "expectedTag": "Data Science"
+  },
+  {
+    "title": "DevOps Engineer",
+    "description": "Manage cloud infrastructure on AWS and GCP. Docker, Kubernetes, Terraform, and Ansible. CI/CD with Jenkins. Linux, bash scripting. Prometheus and Grafana for monitoring. Site reliability focus.",
+    "expectedTag": "DevOps"
+  },
+  {
+    "title": "Mobile Engineer",
+    "description": "Build iOS and Android apps with React Native and Flutter. Experience with Swift and Kotlin. Mobile developer role. We also use Dart and native development.",
+    "expectedTag": "Mobile"
+  },
+  {
+    "title": "Machine Learning Engineer",
+    "description": "Work on ML models and deep learning. NLP and computer vision. PyTorch, Tensorflow, Keras. Hugging Face and transformer models. Generative AI and LLMs. Python and Python.",
+    "expectedTag": "AI/ML"
+  },
+  {
+    "title": "QA Automation Engineer",
+    "description": "Automate testing with Selenium, Cypress, and Playwright. SDET role. Write tests in Python with pytest and JUnit. Quality assurance and manual testing when needed.",
+    "expectedTag": "QA"
+  },
+  {
+    "title": "Security Engineer",
+    "description": "Secure our infrastructure and applications. Cyber security, vulnerability assessment, and penetration testing. Network security and cryptography. Work with infosec and SOC teams.",
+    "expectedTag": "Security"
+  },
+  {
+    "title": "Embedded Software Engineer",
+    "description": "Develop firmware and drivers in C and C++. Experience with RTOS, microcontrollers, and low-level systems. TCP/IP, embedded systems. Optional: FPGA, Verilog, assembly.",
+    "expectedTag": "Embedded/Systems"
+  },
+  {
+    "title": "Software Engineer - Infrastructure",
+    "description": "Backend-focused role. Build APIs in Go and Python. PostgreSQL, Redis, and microservices. We use AWS, Docker, and Kubernetes. Some overlap with SRE and infrastructure.",
+    "expectedTag": "DevOps"
+  },
+  {
+    "title": "Technical Program Manager",
+    "description": "Coordinate engineering projects. Work with product and engineering on roadmap and backlog. Agile and Scrum. User stories and stakeholder management. Not a coding-heavy role.",
+    "expectedTag": "Not Sure"
+  }
+]

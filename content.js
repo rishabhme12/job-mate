@@ -315,13 +315,13 @@ const jmControlBar = new JobMateControlBar(jmStorage, jmFilterEngine);
     // Initial Attempt
     let injected = jmControlBar.inject();
 
-    // Retry Loop (up to 10 seconds)
+    // Retry Loop (up to 15s) — LinkedIn often renders the jobs filter bar after document_idle
     if (!injected) {
         let attempts = 0;
         const interval = setInterval(() => {
             attempts++;
             injected = jmControlBar.inject();
-            if (injected || attempts > 20) { // 20 * 500ms = 10s
+            if (injected || attempts > 30) { // 30 * 500ms = 15s
                 clearInterval(interval);
                 if (injected) console.log("JobMate: Injection successful after retry.");
             }

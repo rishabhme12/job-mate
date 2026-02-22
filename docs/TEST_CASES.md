@@ -16,9 +16,10 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 | U-10 | KeywordEngine: classify returns Not Sure for low/no match | unit | tagging | pass | Node |
 | U-11 | Storage: getSettings returns defaults when empty | unit | storage | pass | Node, chrome mocked |
 | U-12 | Storage: saveSettings merges with existing | unit | storage | pass | Node, chrome mocked |
+| U-13 | KeywordEngine: golden-set tagging accuracy (20 JDs) ≥ 70% | unit | tagging | pass | Node, fixture job_tagging_golden_set.json |
 | E-1 | On LinkedIn jobs search, open JobMate filters → set hide viewed → Apply → list updates | E2E | filters | pending | Chrome MCP |
 | E-2 | Insight panel shows applicant/company stats when job selected | E2E | insights | pending | Chrome MCP |
-| E-3 | Control bar appears next to "All filters" on jobs page | E2E | UI | pending | Chrome MCP |
+| E-3 | Control bar appears next to "All filters" on jobs page (Freshness, Page Filters) | E2E | UI | pending | Chrome MCP |
 
 ## How to run
 

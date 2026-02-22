@@ -70,7 +70,7 @@ Run each E2E case below in order. Use Chrome DevTools MCP to navigate, click, an
 **Steps:**
 
 1. Navigate to a LinkedIn jobs search URL (see Base URL above). Wait for the jobs list to load.
-2. Take a snapshot; confirm the JobMate control bar is visible (e.g. "Page Filters" / "Pro Search" next to "All filters").
+2. Take a snapshot; confirm the JobMate control bar is visible (e.g. "Page Filters" / "Freshness" next to "All filters").
 3. Click the **Page Filters** button (id: `jm-btn-page-filters`). Modal "Page Filters (Visual)" should open.
 4. In the modal, check **Hide Viewed** (checkbox id: `jm-hide-viewed`).
 5. Click **Show results** (button id: `jm-page-apply`). Modal closes.
@@ -104,7 +104,7 @@ Run each E2E case below in order. Use Chrome DevTools MCP to navigate, click, an
 
 1. Navigate to a LinkedIn jobs search URL. Wait for the page to load.
 2. Take a snapshot. Locate the "All filters" button (or pill) in the UI.
-3. Verify that the JobMate control bar (element id: `job-mate-control-bar`) is present and appears next to or near "All filters" (e.g. same row, before or after it). It should contain at least "Page Filters" and "Pro Search" buttons.
+3. Verify that the JobMate control bar (element id: `job-mate-control-bar`) is present and appears next to or near "All filters" (e.g. same row, before or after it). It should contain at least "Page Filters" and "Freshness" buttons.
 4. **Pass:** Control bar is visible next to "All filters". **Fail:** Control bar missing or not next to "All filters".
 
 ---

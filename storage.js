@@ -16,10 +16,7 @@ const JobMateStorage = {
             companyBlacklist: []
         },
         searchTweaks: {
-            datePostedHours: "",
-            mustContain: "",
-            excludes: "",
-            companyBlacklist: ""
+            datePostedHours: ""
         },
         ui: {
             expanded: true
