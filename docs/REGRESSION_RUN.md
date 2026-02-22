@@ -33,8 +33,11 @@ Single place to run **full regression**: unit tests (automated) + E2E (browser-l
 ## Prerequisites
 
 - JobMate extension loaded in Chrome (used by the MCP browser).
-- Chrome DevTools MCP available when an agent runs E2E steps.
+- **Logged-in LinkedIn session** — E2E require you to be signed in to LinkedIn; otherwise the jobs page shows a sign-in modal and the extension UI cannot be verified.
+- Chrome DevTools MCP available when an agent runs E2E steps (optional; you can run Step 2 manually).
 - For local run: `npm run test` must pass before considering E2E.
+
+**To green E2E for Chrome Web Store:** Run Step 2 in a Chrome window where you are logged into LinkedIn and JobMate is installed. After running E-1, E-2, E-3, set each Status in [TEST_CASES.md](TEST_CASES.md) to **pass** or **fail**.
 
 ---
 

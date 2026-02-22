@@ -24,7 +24,7 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 ## How to run
 
 - **Unit:** `npm run test` (from project root).
-- **Full regression:** `npm run regression` (runs unit then prompts for E2E). E2E steps are in [docs/REGRESSION_RUN.md](REGRESSION_RUN.md)—run them via Chrome DevTools MCP; document pass/fail in Status.
+- **Full regression:** `npm run regression` (runs unit then prompts for E2E). E2E steps are in [docs/REGRESSION_RUN.md](REGRESSION_RUN.md)—run them via Chrome DevTools MCP or manually (requires **logged-in LinkedIn** + JobMate in Chrome); then set Status to pass/fail for E-1, E-2, E-3.
 
 ## Adding cases
 
