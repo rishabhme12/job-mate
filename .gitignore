@@ -1,0 +1,7 @@
+# Dependencies
+node_modules/
+
+# Optional: common dev/IDE and OS artifacts
+.cursor/
+*.log
+.DS_Store

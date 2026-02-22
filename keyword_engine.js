@@ -145,5 +145,6 @@ class KeywordEngine {
     }
 }
 
-// Make it available globally
-window.KeywordEngine = KeywordEngine;
+// Make it available globally (browser)
+if (typeof window !== 'undefined') window.KeywordEngine = KeywordEngine;
+if (typeof module !== 'undefined' && module.exports) module.exports = { KeywordEngine };

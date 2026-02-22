@@ -1,0 +1,14 @@
+{
+  "name": "job-mate",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "regression": "npm run test && echo '\nUnit OK. Run E2E from docs/REGRESSION_RUN.md via Chrome MCP.'"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0"
+  }
+}

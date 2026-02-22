@@ -88,3 +88,4 @@ const JobMateStorage = {
         } catch (e) { return {}; }
     }
 };
+if (typeof module !== 'undefined' && module.exports) module.exports = { JobMateStorage };
