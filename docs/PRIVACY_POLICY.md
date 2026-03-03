@@ -25,4 +25,4 @@ We may update this policy from time to time. The "Last updated" date at the top 
 
 ## Contact
 
-For privacy-related questions, use the contact method provided in the Chrome Web Store listing for JobMate.
+For privacy-related questions, contact: **rishabh.gupta9827@gmail.com**.
