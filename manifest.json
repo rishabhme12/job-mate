@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "JobMate - AI Job Tagger",
+  "name": "JobMate - Linkedin Job Filters",
   "version": "1.0.0",
-  "description": "Tag LinkedIn jobs with their engineering type using on-device AI.",
+  "description": "Filter LinkedIn jobs.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
