@@ -1,6 +1,6 @@
 # JobMate Privacy Policy
 
-**Last updated:** February 2025
+**Last updated:** March 3, 2026
 
 ## Overview
 
@@ -17,8 +17,6 @@ JobMate ("the extension") is a browser extension that adds job filters and role 
 
 ## Permissions
 
-- **activeTab** — Used so the extension can run on the currently active tab when you are on LinkedIn jobs.
-- **scripting** — Used to inject the extension’s UI and logic only on LinkedIn job pages.
 - **storage** — Used to save and load your filter and UI preferences locally on your device.
 
 ## Changes
