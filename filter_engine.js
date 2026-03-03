@@ -10,6 +10,7 @@ class FilterEngine {
         this.negativeRegex = null;
         this.isFilteringEnabled = false; // By default, filtering is OFF until "Show results" is clicked
         this.suppressViewedApplied = false; // Sticky mode: prevent hide-viewed/applied during a session
+        this.sessionViewedJobIds = new Set(); // Stable per-page memory of clicked/viewed jobs
         this.updateRegex();
     }
 
@@ -21,6 +22,56 @@ class FilterEngine {
 
     setStickyViewedApplied(enabled) {
         this.suppressViewedApplied = !!enabled;
+    }
+
+    setSessionViewed(jobId) {
+        if (!jobId) return;
+        this.sessionViewedJobIds.add(String(jobId));
+    }
+
+    clearSessionViewed() {
+        this.sessionViewedJobIds.clear();
+    }
+
+    getJobId(jobCard) {
+        if (!jobCard || !jobCard.getAttribute) return '';
+
+        // LinkedIn uses varying wrappers; check current node first.
+        const direct =
+            jobCard.getAttribute('data-occludable-job-id') ||
+            jobCard.getAttribute('data-job-id');
+        if (direct) return String(direct);
+
+        // Check nearest id-bearing ancestor.
+        const parentWithId = jobCard.closest('[data-occludable-job-id], [data-job-id]');
+        if (parentWithId) {
+            return String(
+                parentWithId.getAttribute('data-occludable-job-id') ||
+                parentWithId.getAttribute('data-job-id') ||
+                ''
+            );
+        }
+
+        // Virtualized list wrappers can hold ids on descendants.
+        if (jobCard.querySelector) {
+            const childWithId = jobCard.querySelector('[data-occludable-job-id], [data-job-id]');
+            if (childWithId && childWithId.getAttribute) {
+                const childId =
+                    childWithId.getAttribute('data-occludable-job-id') ||
+                    childWithId.getAttribute('data-job-id');
+                if (childId) return String(childId);
+            }
+
+            // Last fallback: extract numeric id from canonical job links.
+            const linkEl = jobCard.querySelector('a[href*="/jobs/view/"]');
+            if (linkEl && linkEl.getAttribute) {
+                const href = linkEl.getAttribute('href') || '';
+                const match = href.match(/\/jobs\/view\/(\d+)/);
+                if (match && match[1]) return String(match[1]);
+            }
+        }
+
+        return '';
     }
 
     updateRegex() {
@@ -79,7 +130,9 @@ class FilterEngine {
         const text = jobCard.innerText;
         const lowerText = text.toLowerCase();
         const ignoreSticky = !!options.ignoreStickyViewedApplied;
-        const isSessionViewed = jobCard.dataset && jobCard.dataset.jmSessionViewed === '1';
+        const treatViewedAppliedAsDim = !!options.treatViewedAppliedAsDim;
+        const jobId = this.getJobId(jobCard);
+        const isSessionViewed = !!(jobId && this.sessionViewedJobIds.has(jobId));
         const allowViewedAppliedFilter = !this.suppressViewedApplied || ignoreSticky || !isSessionViewed;
 
         // 1. Ghost Protocol: Promoted
@@ -98,13 +151,13 @@ class FilterEngine {
         }
 
         // 2. Ghost Protocol: Applied / Viewed
-        if (this.settings.hideApplied && allowViewedAppliedFilter) {
+        if (this.settings.hideApplied && allowViewedAppliedFilter && !treatViewedAppliedAsDim) {
             if (lowerText.includes('applied')) return false;
             // Also check for specific "Applied" checkmark icon if text is missing?
             // Usually text "Applied X days ago" is present.
         }
 
-        if (this.settings.hideViewed && allowViewedAppliedFilter) {
+        if (this.settings.hideViewed && allowViewedAppliedFilter && !treatViewedAppliedAsDim) {
             if (lowerText.includes('viewed')) return false;
         }
 
@@ -178,6 +231,41 @@ class FilterEngine {
         return true;
     }
 
+    updateViewedAppliedVisual(jobCard) {
+        if (!jobCard) return;
+
+        const lowerText = (jobCard.innerText || '').toLowerCase();
+        const reasons = [];
+        if (this.settings.hideApplied && lowerText.includes('applied')) reasons.push('Applied');
+        if (this.settings.hideViewed && lowerText.includes('viewed')) reasons.push('Viewed');
+
+        const shouldDim = reasons.length > 0;
+        const existingBadge = jobCard.querySelector('.job-mate-status-badge');
+
+        if (!shouldDim) {
+            jobCard.classList.remove('job-mate-dimmed');
+            if (existingBadge) existingBadge.remove();
+            return;
+        }
+
+        jobCard.classList.add('job-mate-dimmed');
+
+        const badgeText = reasons.join(' + ');
+        const host =
+            jobCard.querySelector('.job-card-list__title') ||
+            jobCard.querySelector('.job-card-container__link') ||
+            jobCard.querySelector('strong') ||
+            jobCard;
+
+        const badge = existingBadge || document.createElement('span');
+        badge.className = 'job-mate-status-badge';
+        badge.innerText = badgeText;
+
+        if (!existingBadge) {
+            host.appendChild(badge);
+        }
+    }
+
     /**
      * Run the filter on a container of jobs
      * @param {HTMLElement} listContainer 
@@ -198,6 +286,8 @@ class FilterEngine {
 
         let hiddenCount = 0;
         jobItems.forEach(item => {
+            this.updateViewedAppliedVisual(item);
+
             // SAFETY: Do not hide the currently selected job!
             const isActive = item.classList.contains('jobs-search-results-list__list-item--active') ||
                 item.classList.contains('job-card-container--active') ||
@@ -208,7 +298,7 @@ class FilterEngine {
                 return;
             }
 
-            const show = this.shouldShowJob(item, options);
+            const show = this.shouldShowJob(item, { ...options, treatViewedAppliedAsDim: true });
             if (show) {
                 item.classList.remove('job-mate-hidden');
             } else {

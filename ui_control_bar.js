@@ -181,8 +181,8 @@ class JobMateControlBar {
                         <h3 class="job-mate-section-title">Visibility</h3>
                         <div class="job-mate-checkbox-group">
                             ${toggle('jm-hide-promoted', 'Hide Promoted')}
-                            ${toggle('jm-hide-applied', 'Hide Applied')}
-                            ${toggle('jm-hide-viewed', 'Hide Viewed')}
+                            ${toggle('jm-hide-applied', 'Dim Applied (tag)')}
+                            ${toggle('jm-hide-viewed', 'Dim Viewed (tag)')}
                             ${toggle('jm-hide-easy-apply', 'Hide Easy Apply')}
                         </div>
                     </div>

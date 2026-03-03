@@ -220,20 +220,7 @@ const InsightPanel = {
             appendTag('Scanning...', 'company', '⏳');
         }
 
-        // Lazy Filter Validation
-        if (window.jmFilterEngine) {
-            const check = window.jmFilterEngine.checkDetail(data);
-            if (!check.pass) {
-                const errorSpan = document.createElement('span');
-                errorSpan.className = 'job-mate-stat-tag';
-                // Inline styles for high visibility error
-                errorSpan.style.backgroundColor = '#fff0f0';
-                errorSpan.style.color = '#d32f2f';
-                errorSpan.style.border = '1px solid #d32f2f';
-                errorSpan.innerText = `⚠️ ${check.reason}`;
-                row.appendChild(errorSpan);
-            }
-        }
+        // Detail warning chips disabled by request.
     }
 };
 
@@ -247,7 +234,10 @@ function setupClickListeners() {
             isNavigating = true;
             lastClickTime = Date.now();
             console.log("JobMate: Click detected");
-            jobCard.dataset.jmSessionViewed = '1';
+            if (window.jmFilterEngine && typeof window.jmFilterEngine.getJobId === 'function') {
+                const jobId = window.jmFilterEngine.getJobId(jobCard);
+                window.jmFilterEngine.setSessionViewed(jobId);
+            }
 
             const rightPaneTitle = document.querySelector('.job-details-jobs-unified-top-card__job-title h1');
             if (rightPaneTitle) {
@@ -339,6 +329,7 @@ const observer = new MutationObserver((mutations) => {
         lastUrl = window.location.href;
         if (window.jmFilterEngine) {
             window.jmFilterEngine.setStickyViewedApplied(false);
+            window.jmFilterEngine.clearSessionViewed();
             pendingStickyEnable = true;
         }
     }
