@@ -1,0 +1,810 @@
+/* JobMate Tag Styles */
+.job-mate-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-left: 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #0a66c2;
+  vertical-align: middle;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* animation: fadeIn 0.3s ease-in-out; REMOVED to prevent flashing */
+}
+
+/* Add spacing between icon and text */
+.job-mate-stat-tag i {
+  margin-right: 6px;
+  font-style: normal;
+}
+
+.job-mate-tag.backend {
+  background-color: #2da44e;
+}
+
+.job-mate-tag.frontend {
+  background-color: #a371f7;
+}
+
+.job-mate-tag.fullstack {
+  background-color: #d15d9f;
+}
+
+.job-mate-tag.mobile {
+  background-color: #f7a239;
+}
+
+.job-mate-tag.data {
+  background-color: #3178c6;
+}
+
+.job-mate-tag.devops {
+  background-color: #566e85;
+}
+
+.job-mate-tag.security {
+  background-color: #d73a49;
+}
+
+.job-mate-tag.ai-ml {
+  background-color: #6f42c1;
+}
+
+.job-mate-tag.qa {
+  background-color: #959da5;
+}
+
+.job-mate-tag.product {
+  background-color: #f1e05a;
+  color: #333;
+}
+
+.job-mate-tag.unknown {
+  background-color: #6e7681;
+}
+
+.job-mate-tag.not-job {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- JobMate Stats Row (Theme Agnostic / Native Look) --- */
+.job-mate-stats-row {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  z-index: 10;
+  position: relative;
+  min-height: 24px;
+  /* Prevent layout jump */
+}
+
+.job-mate-stat-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  line-height: 16px;
+  border: 1px solid transparent;
+}
+
+.job-mate-stat-tag[data-type="applicants"] {
+  background-color: #e6f6eb;
+  color: #057642;
+  border-color: #05764233;
+}
+
+.job-mate-stat-tag[data-type="company"] {
+  background-color: #e8e8e8;
+  color: #111111;
+  border-color: #0000001f;
+}
+
+.job-mate-stat-tag[data-type="industry"] {
+  background-color: #fff8c5;
+  color: #5a3e02;
+  border-color: #d4a72c4d;
+}
+
+/* --- Shimmer / Skeleton UI (New v8.0) --- */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+.job-mate-skeleton {
+  background: #f0f2f5;
+  background-image: linear-gradient(to right, #f0f2f5 0%, #e1e3e6 20%, #f0f2f5 40%, #f0f2f5 100%);
+  background-repeat: no-repeat;
+  background-size: 400px 100%;
+  display: inline-block;
+  animation: shimmer 1.5s infinite linear forwards;
+  color: transparent !important;
+  border-color: transparent !important;
+  pointer-events: none;
+  border-radius: 6px;
+  height: 26px;
+  /* Matches tag height */
+  min-width: 80px;
+}
+
+/* Dark Mode Skeleton Adjustment */
+@media (prefers-color-scheme: dark) {
+  .job-mate-skeleton {
+    background: #333;
+    background-image: linear-gradient(to right, #333 0%, #444 20%, #333 40%, #333 100%);
+  }
+}
+
+.theme--dark .job-mate-skeleton,
+.artdeco-mode-dark .job-mate-skeleton {
+  background: #ffffff1f;
+  background-image: linear-gradient(to right, #ffffff1f 0%, #ffffff3d 20%, #ffffff1f 40%, #ffffff1f 100%);
+}
+
+/* --- JobMate Control Bar & Modal (Native Look v2) --- */
+
+/* 1. Entry Button - Matches "All filters" pill */
+.job-mate-control-bar {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  /* Space from standard buttons */
+  vertical-align: middle;
+}
+
+.job-mate-adv-filter-btn {
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  padding: 5px 16px;
+  font-size: 1.4rem;
+  /* Native rem sizing */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 167ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 167ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 167ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 20px;
+}
+
+.job-mate-adv-filter-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.9);
+  color: rgba(0, 0, 0, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+.job-mate-adv-filter-btn:active {
+  background-color: rgba(0, 0, 0, 0.08);
+  /* Active state */
+}
+
+/* Dark Mode Button */
+.theme--dark .job-mate-adv-filter-btn,
+.artdeco-mode-dark .job-mate-adv-filter-btn {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.theme--dark .job-mate-adv-filter-btn:hover,
+.artdeco-mode-dark .job-mate-adv-filter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.9);
+  color: white;
+  box-shadow: inset 0 0 0 1px white;
+}
+
+/* 2. Modal Overlay - Matches artdeco-modal-overlay */
+.job-mate-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 83ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.job-mate-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 3. Modal Container - Matches artdeco-modal */
+.job-mate-modal {
+  background: white;
+  width: 744px;
+  /* LinkedIn standard medium modal width */
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  animation: jmModalIn 167ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes jmModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 4. Modal Header */
+.job-mate-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 50px;
+}
+
+.job-mate-modal-title {
+  font-size: 2rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.9);
+  margin: 0;
+}
+
+.job-mate-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 167ms;
+}
+
+.job-mate-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* 5. Modal Body */
+.job-mate-modal-body {
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.job-mate-modal-section {
+  padding: 24px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.job-mate-section-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* 6. Inputs */
+.job-mate-input-group {
+  margin-bottom: 16px;
+}
+
+.job-mate-label {
+  display: block;
+  font-size: 1.4rem;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.job-mate-text-input {
+  width: 100%;
+  padding: 6px 12px;
+  min-height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  font-size: 1.4rem;
+  color: rgba(0, 0, 0, 0.9);
+  background-color: transparent;
+  transition: border 0.1s;
+}
+
+.job-mate-text-input:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.job-mate-text-input:focus {
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 1px #0a66c2;
+  outline: none;
+  background-color: transparent;
+}
+
+.job-mate-text-input::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Checkboxes */
+.job-mate-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* --- Toggle Switch (iOS / Material style) --- */
+/* --- LinkedIn Native Checkbox Style --- */
+.job-mate-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  /* More spacing like native */
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.job-mate-toggle-label {
+  font-size: 1.6rem;
+  color: rgba(0, 0, 0, 0.9);
+  flex: 1;
+  font-weight: 600;
+  /* Semantic bold */
+  margin-left: 12px;
+  /* Text after checkbox */
+  order: 2;
+}
+
+.job-mate-toggle {
+  position: relative;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  order: 1;
+  /* Checkbox first */
+}
+
+/* Custom Checkbox */
+.job-mate-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.job-mate-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  /* Square with slight radius */
+  transition: .1s;
+}
+
+/* Checkmark (Hidden by default) */
+.job-mate-slider:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.job-mate-slider:before {
+  display: none;
+  /* Remove circle for checkbox look */
+}
+
+/* Checked State */
+input:checked+.job-mate-slider {
+  background-color: #01754f;
+  /* LinkedIn Green */
+  border-color: #01754f;
+}
+
+input:checked+.job-mate-slider:after {
+  display: block;
+}
+
+/* Dark Mode Checkbox */
+.theme--dark .job-mate-slider,
+.artdeco-mode-dark .job-mate-slider {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.theme--dark input:checked+.job-mate-slider,
+.artdeco-mode-dark input:checked+.job-mate-slider {
+  background-color: #70b5f9;
+  border-color: #70b5f9;
+}
+
+.theme--dark input:checked+.job-mate-slider:after,
+.artdeco-mode-dark input:checked+.job-mate-slider:after {
+  border-color: #1b1f23;
+}
+
+/* Dark Mode Overrides */
+.theme--dark .job-mate-text-input,
+.artdeco-mode-dark .job-mate-text-input {
+  /* Fix "blank on blank" - give it a subtle background */
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.theme--dark .job-mate-toggle-label,
+.artdeco-mode-dark .job-mate-toggle-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.theme--dark .job-mate-slider,
+.artdeco-mode-dark .job-mate-slider {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.theme--dark input:checked+.job-mate-slider,
+.artdeco-mode-dark input:checked+.job-mate-slider {
+  background-color: #70b5f9;
+  /* Light Blue for Dark Mode On */
+}
+
+/* 7. Modal Footer */
+.job-mate-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  /* Reset left, Apply right */
+  align-items: center;
+}
+
+.job-mate-btn-secondary {
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.job-mate-btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.9);
+  text-decoration: none;
+}
+
+.job-mate-btn-primary {
+  background-color: #0a66c2;
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 6px 24px;
+  border-radius: 16px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: background-color 167ms;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.job-mate-btn-primary:hover {
+  background-color: #004182;
+}
+
+/* --- JobMate Control Bar Buttons (Art Deco Pill Style) --- */
+/* --- JobMate Control Bar Buttons (Art Deco Pill Style) --- */
+/* --- JobMate Control Bar Buttons (Art Deco Pill Style) --- */
+/* Using ID specificity to override LinkedIn defaults without nuking inheritance */
+#job-mate-control-bar .jm-artdeco-pill {
+  background-color: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 20px;
+  gap: 8px;
+}
+
+/* Hover State (Inactive) */
+#job-mate-control-bar .jm-artdeco-pill:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.9) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Active State (Green) */
+#job-mate-control-bar .jm-artdeco-pill.jm-artdeco-pill--selected {
+  background-color: #057642 !important;
+  border: 1px solid transparent !important;
+  color: white !important;
+}
+
+/* Active State Hover */
+#job-mate-control-bar .jm-artdeco-pill.jm-artdeco-pill--selected:hover {
+  background-color: #004182 !important;
+}
+
+/* Dismiss Icon */
+.jm-dismiss-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background-color 0.2s;
+}
+
+.jm-dismiss-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Mode Overrides for Pills */
+.theme--dark #job-mate-control-bar .jm-artdeco-pill,
+.artdeco-mode-dark #job-mate-control-bar .jm-artdeco-pill {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  background-color: transparent !important;
+}
+
+.theme--dark #job-mate-control-bar .jm-artdeco-pill:hover,
+.artdeco-mode-dark #job-mate-control-bar .jm-artdeco-pill:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+  color: white !important;
+}
+
+.theme--dark #job-mate-control-bar .jm-artdeco-pill--selected,
+.artdeco-mode-dark #job-mate-control-bar .jm-artdeco-pill--selected {
+  background-color: #057642 !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.theme--dark #job-mate-control-bar .jm-artdeco-pill--selected:hover,
+.artdeco-mode-dark #job-mate-control-bar .jm-artdeco-pill--selected:hover {
+  background-color: #004182 !important;
+}
+
+/* --- DARK MODE OVERRIDES (Critical Fix) --- */
+.theme--dark .job-mate-modal,
+.artdeco-mode-dark .job-mate-modal {
+  background-color: #1b1f23;
+  /* Dark gray bg */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Text Colors */
+.theme--dark .job-mate-modal-title,
+.theme--dark .job-mate-section-title,
+.theme--dark .job-mate-label,
+.theme--dark .job-mate-checkbox-item span,
+.artdeco-mode-dark .job-mate-modal-title,
+.artdeco-mode-dark .job-mate-section-title,
+.artdeco-mode-dark .job-mate-label,
+.artdeco-mode-dark .job-mate-checkbox-item span {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.theme--dark .job-mate-close-btn,
+.artdeco-mode-dark .job-mate-close-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme--dark .job-mate-close-btn:hover,
+.artdeco-mode-dark .job-mate-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Dark Inputs */
+.theme--dark .job-mate-text-input,
+.artdeco-mode-dark .job-mate-text-input {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.theme--dark .job-mate-text-input:hover,
+.artdeco-mode-dark .job-mate-text-input:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.theme--dark .job-mate-text-input:focus,
+.artdeco-mode-dark .job-mate-text-input:focus {
+  border-color: #70b5f9;
+  box-shadow: 0 0 0 1px #70b5f9;
+}
+
+.theme--dark .job-mate-text-input::placeholder,
+.artdeco-mode-dark .job-mate-text-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark Borders */
+.theme--dark .job-mate-modal-header,
+.theme--dark .job-mate-modal-footer,
+.theme--dark .job-mate-modal-section,
+.artdeco-mode-dark .job-mate-modal-header,
+.artdeco-mode-dark .job-mate-modal-footer,
+.artdeco-mode-dark .job-mate-modal-section {
+  border-color: rgba(255, 255, 255, 0.12);
+  /* Subtle separators */
+}
+
+/* Dark Buttons */
+.theme--dark .job-mate-btn-secondary,
+.artdeco-mode-dark .job-mate-btn-secondary {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme--dark .job-mate-btn-secondary:hover,
+.artdeco-mode-dark .job-mate-btn-secondary:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme--dark .job-mate-btn-primary,
+.artdeco-mode-dark .job-mate-btn-primary {
+  background-color: #70b5f9;
+  color: #1b1f23;
+  /* Dark text on light blue button */
+}
+
+.theme--dark .job-mate-btn-primary:hover,
+.artdeco-mode-dark .job-mate-btn-primary:hover {
+  background-color: #92c5fb;
+}
+
+/* Utility to ensure we don't break layout */
+.job-mate-hidden {
+  display: none !important;
+}
+
+.job-mate-dimmed {
+  opacity: 0.5 !important;
+  filter: grayscale(0.25);
+  transition: opacity 0.2s ease;
+}
+
+.job-mate-status-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: #f3f2ef;
+  color: #434649;
+  border: 1px solid #d8dadd;
+  vertical-align: middle;
+}
+
+.theme--dark .job-mate-status-badge,
+.artdeco-mode-dark .job-mate-status-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.job-mate-control-bar * {
+  box-sizing: border-box;
+}
+
+/* --- Dark Mode for Tags --- */
+.theme--dark .job-mate-stat-tag,
+.artdeco-mode-dark .job-mate-stat-tag {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Specific Tag Colors in Dark Mode (Optional: slightly muted) */
+.theme--dark .job-mate-stat-tag[data-type="applicants"],
+.artdeco-mode-dark .job-mate-stat-tag[data-type="applicants"] {
+  color: #4cd964 !important;
+  /* Brighter green */
+  background-color: rgba(76, 217, 100, 0.15) !important;
+}
+
+/* Dark Mode Buttons in Control Bar */
+.theme--dark #job-mate-control-bar button,
+.artdeco-mode-dark #job-mate-control-bar button {
+  background-color: #70b5f9;
+  /* Light Blue */
+  color: #1b1f23;
+}
+
+.theme--dark #job-mate-control-bar button:hover,
+.artdeco-mode-dark #job-mate-control-bar button:hover {
+  background-color: #92c5fb;
+}
+
+.theme--dark #job-mate-control-bar button.jm-secondary-btn,
+.artdeco-mode-dark #job-mate-control-bar button.jm-secondary-btn {
+  background-color: transparent;
+  color: #70b5f9;
+  border-color: #70b5f9;
+}
+
+.theme--dark #job-mate-control-bar button.jm-secondary-btn:hover,
+.artdeco-mode-dark #job-mate-control-bar button.jm-secondary-btn:hover {
+  background-color: rgba(112, 181, 249, 0.1);
+}

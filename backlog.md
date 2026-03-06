@@ -77,12 +77,25 @@ Improvemtns
 (world recommend trying top 5 other extensions)
 1. Search filter-->Pro search and place next to searc icon - also remove active and cross icon as ot may not makes sense (or rather we can prefill the values based on url)
 2. Hide reposted filter
-3. check if hide easy apply can be backend
 4. mainatain list of blocked companies
-5. viewed filter still refreshing - bug
 6. Bug - page filter still qctive stae on reload even though its not applied which is okay
 6. check if saved jobs can be added as filter fe or be
 7. button colliding with other buttons so we need to think right positioning
 8. think about making a development system - which is conservative like engineering team - it plans, design and execute write test cases, maintaomn docs, regression test and qa sign off before giving prod green light. Also daily/weekly regresison testing plan - automated
 9. think how we can make whole development -  linkedin in ui agnostic or atleast be safe most of the time
 10. Add these filters at other places of job listing not just job search
+
+New:
+
+Improvements:
+change name, description, add assets - search listing banner, store listing banners videos etc
+accurate jobs/offerletter - linkedin pro search and filters and more to get increase calls and interview and find and apply most relavant listings
+1. Add walkthrough journey
+2. Start building asset to promote/market - Articles, videos, usecase screenshot, posts on PH/reddit
+3. promote positive user ratings volumne
+4. promote users to write reviews on platforms where it will boost downloads
+5. some journey to collect feedback/suggestions from users
+6. Improve listing quality - content, assets - Logo, banner, videos
+7. test - dark/light theme, other languages, country specific linkedin
+8. Freshness should show values and should be in green state if any time restructions are applied. also can we make linkedin time filters show the right value.
+
