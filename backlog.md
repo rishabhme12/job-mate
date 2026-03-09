@@ -90,7 +90,8 @@ New:
 Improvements:
 change name, description, add assets - search listing banner, store listing banners videos etc
 accurate jobs/offerletter - linkedin pro search and filters and more to get increase calls and interview and find and apply most relavant listings
-1. Add walkthrough journey
+1. Add walkthrough journey (walkthrough/activatio) - very important 
+11. filters dont appear every time we launch jobs page, appear after a refresh
 2. Start building asset to promote/market - Articles, videos, usecase screenshot, posts on PH/reddit
 3. promote positive user ratings volumne
 4. promote users to write reviews on platforms where it will boost downloads
@@ -98,4 +99,7 @@ accurate jobs/offerletter - linkedin pro search and filters and more to get incr
 6. Improve listing quality - content, assets - Logo, banner, videos
 7. test - dark/light theme, other languages, country specific linkedin
 8. Freshness should show values and should be in green state if any time restructions are applied. also can we make linkedin time filters show the right value.
+9. Should work on AI powered new search interface linkedin
+10. respoted filters
+
 

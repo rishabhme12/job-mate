@@ -1,15 +1,16 @@
 # Chrome Web Store Publish Checklist (JobMate)
 
-**Prepared on:** March 3, 2026
+**Prepared on:** March 9, 2026
 **Competitor reference:** [Hide Applied Jobs - LinkedIn](https://chromewebstore.google.com/detail/hide-applied-jobs-linkedi/jkoegkdeggghnoenfgjoklfkmihkighf)
 
 ## 1) Submission blockers to clear first
 
 - [x] Keep permissions minimal (`storage` only).
 - [x] Restrict host scope to required URLs only (`linkedin.com/jobs/*`, `linkedin.com/feed/*`).
-- [ ] Add extension icons in manifest (`16`, `48`, `128`) and include files in package.
-- [ ] Host `docs/PRIVACY_POLICY.md` on a public URL (required by CWS).
-- [ ] Prepare a support URL (GitHub issues page or product page).
+- [x] Add extension icons in manifest (`16`, `48`, `128`) and include files in package.
+- [x] Host privacy policy on a public URL (required by CWS): `https://rishabhme12.github.io/job-mate/privacy-policy.html`.
+- [x] Prepare a support URL: `https://github.com/rishabhme12/job-mate/issues`.
+- [x] Set homepage URL: `https://github.com/rishabhme12/job-mate`.
 
 ## 2) Store listing assets
 
@@ -59,7 +60,7 @@ Proof points:
 - [ ] Manual regression on LinkedIn Jobs search results.
 - [ ] Manual regression on LinkedIn Feed job cards.
 - [ ] Verify no console errors on page transitions.
-- [ ] Zip package only includes required extension files (no secrets, no local artifacts).
+- [x] Zip package only includes required extension files (no secrets, no local artifacts).
 - [ ] Listing is not missing icon/screenshot/description (missing assets can cause rejection).
 - [ ] Privacy fields in dashboard exactly match extension behavior and privacy policy.
 

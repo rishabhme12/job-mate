@@ -4,6 +4,15 @@ Use this when filling out the Chrome Web Store dashboard for JobMate.
 
 ---
 
+## Additional fields (Dashboard)
+
+- **Homepage URL:** `https://github.com/rishabhme12/job-mate`
+- **Support URL:** `https://github.com/rishabhme12/job-mate/issues`
+- **Privacy policy URL:** `https://rishabhme12.github.io/job-mate/privacy-policy.html`
+- **Official URL:** `None` (optional unless you want Search Console ownership verification)
+
+---
+
 ## Single purpose (required field)
 
 **Suggested text:**
@@ -28,12 +37,11 @@ Paste these in the "Justification" fields for each permission in the CWS dashboa
 - **Local storage:** Filter and UI preferences are stored locally in the browser.
 - **No personal or account data:** We do not collect or transmit LinkedIn account or profile data.
 
-You must provide a **privacy policy URL** in the store. Options:
+Use this **privacy policy URL** in CWS:
 
-1. Host `docs/privacy-policy.html` (recommended) on GitHub Pages or your site and use that URL.
-2. Copy the content of `docs/PRIVACY_POLICY.md` into a single public page and use that URL.
+`https://rishabhme12.github.io/job-mate/privacy-policy.html`
 
-The URL must be publicly accessible so reviewers and users can open it.
+It must remain publicly accessible so reviewers and users can open it.
 
 ---
 

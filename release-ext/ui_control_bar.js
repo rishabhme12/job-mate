@@ -16,6 +16,20 @@ class JobMateControlBar {
         this.tempSettings = null; // Stores changes before "Apply"
     }
 
+    findJobListContainers() {
+        let lists = Array.from(document.querySelectorAll(
+            '.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list, ul[aria-label*="Search results"]'
+        ));
+        if (lists.length === 0) {
+            const card = document.querySelector('.job-card-container, .jobs-search-results__list-item, [data-occludable-job-id]');
+            if (card) {
+                const parentList = card.closest('ul') || card.closest('[role="list"]');
+                if (parentList) lists = [parentList];
+            }
+        }
+        return lists;
+    }
+
     async init() {
         this.settings = await this.storage.getSettings();
 
@@ -47,24 +61,58 @@ class JobMateControlBar {
         if (!window.location.href.includes('/jobs/') && !window.location.href.includes('/feed/')) return false;
         if (document.getElementById('job-mate-control-bar')) return true;
 
-        const allFiltersBtn = document.querySelector('.search-reusables__all-filters-pill-button') ||
-            Array.from(document.querySelectorAll('button')).find(b => b.innerText.trim() === 'All filters');
+        const isInDetailPane = (el) => !!(el && (el.closest('.jobs-search__job-details') || el.closest('.scaffold-layout__detail')));
+        const isVisibleTopBarButton = (btn) => {
+            if (!btn) return false;
+            const style = window.getComputedStyle(btn);
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+            const rect = btn.getBoundingClientRect();
+            if (rect.width < 20 || rect.height < 20) return false;
+            return rect.top > -120 && rect.top < 420 && rect.right > 0 && rect.left < window.innerWidth;
+        };
+
+        const findAllFiltersButton = () => {
+            const scopedBars = Array.from(document.querySelectorAll(
+                '.search-reusables__filters-bar-grouping, .search-reusables__primary-filter, [class*="search-reusables"]'
+            )).filter(el => !isInDetailPane(el));
+
+            for (const bar of scopedBars) {
+                const direct = bar.querySelector('.search-reusables__all-filters-pill-button');
+                if (direct && isVisibleTopBarButton(direct)) return direct;
+                const textMatch = Array.from(bar.querySelectorAll('button')).find(b =>
+                    b.innerText.trim().toLowerCase() === 'all filters' && isVisibleTopBarButton(b)
+                );
+                if (textMatch) return textMatch;
+            }
+
+            // Global fallback: visible top-row "All filters" only.
+            return Array.from(document.querySelectorAll('button')).find(b =>
+                b.innerText.trim().toLowerCase() === 'all filters' &&
+                isVisibleTopBarButton(b) &&
+                !isInDetailPane(b)
+            ) || null;
+        };
+
+        const allFiltersBtn = findAllFiltersButton();
 
         let injectionTarget = null;
         let insertionMethod = 'append';
+        let insertionAnchor = null;
 
         if (allFiltersBtn) {
             const wrapper = allFiltersBtn.closest('li') || allFiltersBtn.parentElement;
             if (wrapper && wrapper.parentElement) {
-                // User wants it "next to search button" (presumably start of list)
-                // "move other elemnt slittle right" implies prepending to the list.
                 injectionTarget = wrapper.parentElement;
-                insertionMethod = 'prepend';
+                insertionAnchor = wrapper;
+                insertionMethod = 'before-anchor';
             } else {
                 injectionTarget = allFiltersBtn.parentElement;
-                insertionMethod = 'prepend';
+                insertionAnchor = allFiltersBtn;
+                insertionMethod = 'before-anchor';
             }
         } else {
+            // Do not inject into list headers (blue strip) to avoid wrong placement.
+            // Wait for top filters row to render instead.
             return false;
         }
 
@@ -78,14 +126,19 @@ class JobMateControlBar {
             this.container.className = 'job-mate-control-bar';
             this.container.innerHTML = this.renderButtonsHTML();
 
-            if (insertionMethod === 'prepend') {
+            if (insertionMethod === 'before-anchor' && insertionAnchor && injectionTarget === insertionAnchor.parentElement) {
                 this.container.style.display = 'inline-flex';
-                this.container.style.marginRight = '8px'; // Add spacing to the right
+                this.container.style.marginRight = '8px';
+                this.container.style.marginBottom = '0';
+                this.container.style.padding = '0';
+                injectionTarget.insertBefore(this.container, insertionAnchor);
+            } else if (insertionMethod === 'prepend') {
+                this.container.style.display = 'inline-flex';
+                this.container.style.marginRight = '8px';
                 this.container.style.marginBottom = '0';
                 this.container.style.padding = '0';
                 injectionTarget.prepend(this.container);
             } else {
-                // Fallback (though currently we force prepend)
                 injectionTarget.prepend(this.container);
             }
 
@@ -98,7 +151,7 @@ class JobMateControlBar {
                     e.preventDefault();
                     const action = e.target.dataset.action;
                     if (action === 'reset-page') this.resetPageFilters();
-                    // if (action === 'reset-search') this.resetSearchFilters(); // Pro Search has no active state
+                    if (action === 'reset-search') this.resetSearchFilters();
                     return;
                 }
 
@@ -288,7 +341,7 @@ class JobMateControlBar {
             this.updatePageButtonState();
 
             // Run Filters
-            const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+            const lists = this.findJobListContainers();
             this.filterEngine.setStickyViewedApplied(false);
             lists.forEach(l => this.filterEngine.applyFilters(l, { ignoreStickyViewedApplied: true }));
             this.filterEngine.setStickyViewedApplied(true);
@@ -415,8 +468,24 @@ class JobMateControlBar {
         const btn = document.getElementById('jm-btn-search-tweaks');
         if (!btn) return;
 
-        // No active state for Freshness
-        // Just ensure it's clean
+        const params = new URLSearchParams(window.location.search);
+        const tpr = params.get('f_TPR');
+
+        if (tpr && tpr.startsWith('r')) {
+            const sec = parseInt(tpr.substring(1), 10);
+            if (!isNaN(sec) && sec > 0) {
+                const hours = Math.round(sec / 3600);
+                btn.innerHTML = `<span>${hours} hrs</span><span class="jm-dismiss-icon" data-action="reset-search">✕</span>`;
+                btn.classList.add('jm-artdeco-pill--selected');
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+                return;
+            }
+        }
+
+        // No active freshness filter
+        btn.innerHTML = `<span>Freshness</span>`;
         btn.classList.remove('jm-artdeco-pill--selected');
         btn.classList.remove('artdeco-pill--selected');
     }
@@ -442,7 +511,7 @@ class JobMateControlBar {
         this.updatePageButtonState();
 
         // Re-run filters to show everything
-        const lists = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+        const lists = this.findJobListContainers();
         lists.forEach(l => this.filterEngine.applyFilters(l));
     }
 

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Jobs Hero</title>
+    <link rel="stylesheet" href="welcome.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="welcome-container">
+
+        <!-- Global Header -->
+        <div class="header-banner"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0 0 0;">
+            <img id="dynamic-ext-icon" src="icons/icon128.png" alt="Extension Logo"
+                style="width: 56px; height: 56px; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h1 id="dynamic-ext-title" style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 4px;">
+                Welcome!</h1>
+            <p id="dynamic-ext-desc"
+                style="font-size: 14px; color: #4b5563; text-align: center; max-width: 80%; line-height: 1.4; margin-bottom: 8px;">
+            </p>
+        </div>
+
+        <!-- Progress Indicators -->
+        <div class="progress-bar">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <!-- Slides Container -->
+        <div class="slides-wrapper">
+            <!-- Slide 1: Welcome & Overview -->
+            <div class="slide active">
+                <div class="slide-visual">
+                    <img src="assets/tutorial/1-overview.png" alt="Jobs Hero Overview"
+                        style="width: 100%; height: 100%; object-fit: contain; border-radius: 16px;">
+                </div>
+                <div class="slide-content">
+                    <h1>Supercharge Your Search</h1>
+                    <p>Stop wasting time on bad listings. Jobs Hero adds advanced Pro Search and custom filters directly
+                        into LinkedIn to find your perfect job faster.</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Freshness -->
+            <div class="slide">
+                <div class="slide-visual">
+                    <img src="assets/tutorial/2-freshness.png" alt="Freshness Filter"
+                        style="width: 100%; height: 100%; object-fit: contain; border-radius: 16px;">
+                </div>
+                <div class="slide-content">
+                    <h1>Precision Freshness</h1>
+                    <p>Filter jobs by the exact hours since posted, so you can always be the early applicant and never
+                        miss a new opportunity.</p>
+                </div>
+            </div>
+
+            <!-- Slide 3: Visual Filters -->
+            <div class="slide">
+                <div class="slide-visual">
+                    <img src="assets/tutorial/3-visual-filters.png" alt="Visual Filters"
+                        style="width: 100%; height: 100%; object-fit: contain; border-radius: 16px;">
+                </div>
+                <div class="slide-content">
+                    <h1>Clean The Clutter</h1>
+                    <p>Instantly hide promoted, applied, or reposted jobs visually from your search feed with a single
+                        click.</p>
+                </div>
+            </div>
+
+            <!-- Slide 4: Text Filters & Tags -->
+            <div class="slide">
+                <div class="slide-visual">
+                    <img src="assets/tutorial/4-text-filters.png" alt="Text Filters and Tags"
+                        style="width: 100%; height: 100%; object-fit: contain; border-radius: 16px;">
+                </div>
+                <div class="slide-content">
+                    <h1>Advanced Filtering & Tags</h1>
+                    <p>Filter by specific job titles or blacklist companies. Plus, intelligent role tags show you
+                        exactly what the job entails.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls / CTA Area -->
+        <div class="controls">
+            <button id="prevBtn" class="nav-btn hidden">Back</button>
+            <button id="nextBtn" class="primary-btn">Next</button>
+            <a id="ctaBtn" class="primary-btn hide-btn"
+                href="https://www.linkedin.com/jobs/search/?currentJobId=4380298479&geoId=92000000&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true"
+                target="_blank" rel="noopener noreferrer">Try Jobs Hero Now 🚀</a>
+        </div>
+    </div>
+
+    <!-- Background Decoration -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+
+    <script src="welcome.js"></script>
+</body>
+
+</html>

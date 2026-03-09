@@ -15,7 +15,12 @@
       "128": "icons/icon128.png"
     }
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -23,8 +28,16 @@
         "https://www.linkedin.com/feed/*"
       ],
       "run_at": "document_end",
-      "js": ["storage.js", "filter_engine.js", "ui_control_bar.js", "keyword_engine.js", "content.js"],
-      "css": ["styles.css"]
+      "js": [
+        "storage.js",
+        "filter_engine.js",
+        "ui_control_bar.js",
+        "keyword_engine.js",
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
     }
   ]
 }

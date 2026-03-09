@@ -29,6 +29,22 @@ function throttle(func, limit) {
     }
 }
 
+function findJobListContainers() {
+    let containers = Array.from(document.querySelectorAll(
+        '.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list, ul[aria-label*="Search results"]'
+    ));
+
+    if (containers.length === 0) {
+        const card = document.querySelector('.job-card-container, .jobs-search-results__list-item, [data-occludable-job-id]');
+        if (card) {
+            const parentList = card.closest('ul') || card.closest('[role="list"]');
+            if (parentList) containers = [parentList];
+        }
+    }
+
+    return containers;
+}
+
 // --- Helper: Tagging Logic ---
 function getTagClass(tag) {
     const cleanTag = tag.toLowerCase().replace(/\s/g, '-');
@@ -71,9 +87,15 @@ function injectTag(titleElement, jobDescription) {
 const InsightPanel = {
     // Fast Selector Cache
     getTitleElement() {
-        return document.querySelector('.job-details-jobs-unified-top-card__job-title h1') ||
+        // Classic LinkedIn layout
+        const classic = document.querySelector('.job-details-jobs-unified-top-card__job-title h1') ||
             document.querySelector('.jobs-unified-top-card__job-title h1') ||
             document.querySelector('h1.t-24');
+        if (classic) return classic;
+
+        return document.querySelector('.job-view-layout h1') ||
+            document.querySelector('.job-details h1') ||
+            document.querySelector('main h1');
     },
 
     // 1. Instant Shimmer Injection
@@ -239,7 +261,7 @@ function setupClickListeners() {
                 window.jmFilterEngine.setSessionViewed(jobId);
             }
 
-            const rightPaneTitle = document.querySelector('.job-details-jobs-unified-top-card__job-title h1');
+            const rightPaneTitle = InsightPanel.getTitleElement();
             if (rightPaneTitle) {
                 lastScrapedTitle = rightPaneTitle.innerText.trim();
 
@@ -297,27 +319,86 @@ const jmFilterEngine = new FilterEngine();
 window.jmFilterEngine = jmFilterEngine; // Expose for InsightPanel
 const jmControlBar = new JobMateControlBar(jmStorage, jmFilterEngine);
 
+let injectionInterval = null;
+
+function ensureInjectedWithRetry() {
+    if (document.getElementById('job-mate-control-bar')) {
+        jmControlBar.updateSearchButtonState();
+        jmControlBar.updatePageButtonState();
+        return true;
+    }
+
+    let injected = jmControlBar.inject();
+    if (injected) {
+        // Ensure state is updated if injected immediately
+        jmControlBar.updateSearchButtonState();
+        jmControlBar.updatePageButtonState();
+        return true;
+    }
+
+    // Keep an existing retry loop running; don't reset it on every mutation.
+    if (injectionInterval) return false;
+
+    let attempts = 0;
+    injectionInterval = setInterval(() => {
+        attempts++;
+        injected = jmControlBar.inject();
+        if (injected || attempts > 240) { // 240 * 500ms = 120s
+            clearInterval(injectionInterval);
+            injectionInterval = null;
+            if (injected) {
+                jmControlBar.updateSearchButtonState();
+                jmControlBar.updatePageButtonState();
+                console.log("JobMate: Injection successful after retry.");
+            }
+        }
+    }, 500);
+
+    return false;
+}
+
+function handleUrlChange() {
+    if (!window.location.href.includes('/jobs/')) return;
+    if (window.location.href !== lastUrl) {
+        lastUrl = window.location.href;
+        if (window.jmFilterEngine) {
+            window.jmFilterEngine.setStickyViewedApplied(false);
+            window.jmFilterEngine.clearSessionViewed();
+            pendingStickyEnable = true;
+        }
+    }
+    ensureInjectedWithRetry();
+    JobMate.handleMutation();
+}
+
 // Start UI with robust retry logic
 // LinkedIn often lazily loads the filter bar. We need to wait for it.
 (async function initJobMate() {
     await jmControlBar.init();
-
-    // Initial Attempt
-    let injected = jmControlBar.inject();
-
-    // Retry Loop (up to 15s) — LinkedIn often renders the jobs filter bar after document_idle
-    if (!injected) {
-        let attempts = 0;
-        const interval = setInterval(() => {
-            attempts++;
-            injected = jmControlBar.inject();
-            if (injected || attempts > 30) { // 30 * 500ms = 15s
-                clearInterval(interval);
-                if (injected) console.log("JobMate: Injection successful after retry.");
-            }
-        }, 500);
-    }
+    // Delay first injection attempt to let LinkedIn stabilize
+    setTimeout(() => {
+        ensureInjectedWithRetry();
+    }, 1500);
+    // Ensure tags/filters run on first page load even without additional DOM mutations.
+    JobMate.handleMutation();
+    setTimeout(() => JobMate.handleMutation(), 1000);
+    setTimeout(() => JobMate.handleMutation(), 3000);
 })();
+
+// LinkedIn uses SPA navigation paths that may not always trigger useful mutations quickly.
+window.addEventListener('popstate', handleUrlChange);
+const _jmPushState = history.pushState;
+history.pushState = function () {
+    const res = _jmPushState.apply(this, arguments);
+    setTimeout(handleUrlChange, 0);
+    return res;
+};
+const _jmReplaceState = history.replaceState;
+history.replaceState = function () {
+    const res = _jmReplaceState.apply(this, arguments);
+    setTimeout(handleUrlChange, 0);
+    return res;
+};
 
 const runDebounced = debounce(() => JobMate.handleMutation(), 200);
 const runThrottled = throttle(() => JobMate.handleMutation(), 100);
@@ -326,12 +407,7 @@ const observer = new MutationObserver((mutations) => {
     if (!window.location.href.includes('/jobs/')) return;
 
     if (window.location.href !== lastUrl) {
-        lastUrl = window.location.href;
-        if (window.jmFilterEngine) {
-            window.jmFilterEngine.setStickyViewedApplied(false);
-            window.jmFilterEngine.clearSessionViewed();
-            pendingStickyEnable = true;
-        }
+        handleUrlChange();
     }
 
     if (Date.now() - lastClickTime < 2500) {
@@ -353,7 +429,7 @@ JobMate.handleMutation = function () {
     // OPTIMIZATION: Do not run filters if user just clicked (navigation).
     // This prevents the job from vanishing immediately when "Hide Viewed" is ON.
     if (Date.now() - lastClickTime > 1500 && !isNavigating) {
-        const listContainers = document.querySelectorAll('.jobs-search-results-list, .scaffold-layout__list, .jobs-search-results, ul.jobs-search__results-list');
+        const listContainers = findJobListContainers();
         listContainers.forEach(container => {
             jmFilterEngine.applyFilters(container);
         });
@@ -364,7 +440,7 @@ JobMate.handleMutation = function () {
     }
 
     // Attempt Injection (Reactive)
-    jmControlBar.inject();
+    ensureInjectedWithRetry();
 
     // Ensure button states match current URL/Settings (Fixes SPA navigation issues)
     jmControlBar.updateSearchButtonState();
