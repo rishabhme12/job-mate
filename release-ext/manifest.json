@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Jobs Hero",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LinkedIn pro search and filters and more — save you time finding right job and get more calls and interviews.",
   "icons": {
     "16": "icons/icon16.png",
