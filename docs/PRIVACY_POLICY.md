@@ -1,10 +1,10 @@
-# JobMate Privacy Policy
+# Jobs Hero Privacy Policy
 
-**Last updated:** March 3, 2026
+**Last updated:** March 9, 2026
 
 ## Overview
 
-JobMate ("the extension") is a browser extension that adds job filters and role tagging on LinkedIn Jobs. This policy describes what data the extension uses and where it is stored.
+Jobs Hero ("the extension") is a browser extension that adds job filters and role tagging on LinkedIn Jobs. This policy describes what data the extension uses and where it is stored.
 
 ## Data collection and use
 

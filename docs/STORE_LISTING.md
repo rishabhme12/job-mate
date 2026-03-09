@@ -1,6 +1,6 @@
 # Chrome Web Store listing copy
 
-Use this when filling out the Chrome Web Store dashboard for JobMate.
+Use this when filling out the Chrome Web Store dashboard for Jobs Hero.
 
 ---
 
@@ -17,7 +17,7 @@ Use this when filling out the Chrome Web Store dashboard for JobMate.
 
 **Suggested text:**
 
-JobMate has a single purpose: to improve the LinkedIn Jobs experience by adding on-page filters (e.g. hide viewed/applied jobs, keyword and company filters) plus role-type tags and company insight chips directly in the jobs UI. All processing and storage is on-device; no data is sent to external servers.
+Jobs Hero has a single purpose: to improve the LinkedIn Jobs experience by adding on-page filters (e.g. hide viewed/applied jobs, keyword and company filters) plus role-type tags and company insight chips directly in the jobs UI. All processing and storage is on-device; no data is sent to external servers.
 
 ---
 
@@ -49,7 +49,7 @@ It must remain publicly accessible so reviewers and users can open it.
 
 Use this as a baseline long description and customize as needed.
 
-JobMate helps you triage LinkedIn job search faster with practical filters and role tagging directly on the page.
+Jobs Hero helps you triage LinkedIn job search faster with practical filters and role tagging directly on the page.
 
 What it does:
 - Filter or dim jobs by viewed/applied, promoted, Easy Apply, and review-time signals.

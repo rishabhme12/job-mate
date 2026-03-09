@@ -1,4 +1,4 @@
-# Chrome Web Store Publish Checklist (JobMate)
+# Chrome Web Store Publish Checklist (Jobs Hero)
 
 **Prepared on:** March 9, 2026
 **Competitor reference:** [Hide Applied Jobs - LinkedIn](https://chromewebstore.google.com/detail/hide-applied-jobs-linkedi/jkoegkdeggghnoenfgjoklfkmihkighf)
@@ -38,7 +38,7 @@ Snapshot from the listing on March 3, 2026:
 - Current version shown: `1.8.3`.
 - Primary promise: hide applied jobs and promoted jobs on LinkedIn.
 
-Position JobMate as:
+Position Jobs Hero as:
 - Broader than simple hide/dim: multi-filter pipeline + keyword/company controls.
 - More informative: role tagging and company insight chips.
 - Privacy-forward: local-only processing and storage.

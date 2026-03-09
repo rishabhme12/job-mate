@@ -1,4 +1,4 @@
-# JobMate Full Regression Runbook
+# Jobs Hero Full Regression Runbook
 
 Single place to run **full regression**: unit tests (automated) + E2E (browser-led via Chrome DevTools MCP). All cases are defined in [TEST_CASES.md](TEST_CASES.md).
 
@@ -19,25 +19,25 @@ Single place to run **full regression**: unit tests (automated) + E2E (browser-l
 | Layer | What | Who runs it | Fully automated? |
 |-------|------|-------------|------------------|
 | **Unit tests (U-1 … U-12)** | FilterEngine, KeywordEngine, Storage logic in Node (chrome mocked). | `npm run test` (you or agent). | **Yes** — no browser, no LinkedIn. |
-| **E2E (E-1, E-2, E-3)** | Real LinkedIn + JobMate: control bar, filters, insight panel. | **Browser MCP** when the agent runs regression (agent drives Chrome), or **you** by hand using this runbook. | **No** — needs a real browser and (for MCP) the agent to execute the runbook steps. |
+| **E2E (E-1, E-2, E-3)** | Real LinkedIn + Jobs Hero: control bar, filters, insight panel. | **Browser MCP** when the agent runs regression (agent drives Chrome), or **you** by hand using this runbook. | **No** — needs a real browser and (for MCP) the agent to execute the runbook steps. |
 | **Full regression** | Unit + all E2E. | You run `npm run regression` then either (a) ask the agent to run E2E via Chrome MCP, or (b) run E2E yourself. | **Half:** unit is automated; E2E is scripted in this runbook but not headless (no Playwright). |
 
 **What you still need to do to “test everything”:**
 
 1. **Unit:** Already automated. Run `npm run test` (or `npm run regression`); ensure all 12 pass.
-2. **E2E:** Either (a) **ask the agent** “Run full regression” so it runs unit + E2E via Chrome MCP, or (b) **you** open LinkedIn jobs in Chrome (with JobMate installed), follow Step 2 in this runbook for E-1, E-2, E-3, and set Status in [TEST_CASES.md](TEST_CASES.md) to pass/fail.
+2. **E2E:** Either (a) **ask the agent** “Run full regression” so it runs unit + E2E via Chrome MCP, or (b) **you** open LinkedIn jobs in Chrome (with Jobs Hero installed), follow Step 2 in this runbook for E-1, E-2, E-3, and set Status in [TEST_CASES.md](TEST_CASES.md) to pass/fail.
 3. **User-only (out of scope for automation/MCP):** Real-world checks only you can do — e.g. “Does this feel right on my account?”, “Do filters work with my actual viewed/applied list?”, cross-browser, performance, accessibility. Those stay manual.
 
 ---
 
 ## Prerequisites
 
-- JobMate extension loaded in Chrome (used by the MCP browser).
+- Jobs Hero extension loaded in Chrome (used by the MCP browser).
 - **Logged-in LinkedIn session** — E2E require you to be signed in to LinkedIn; otherwise the jobs page shows a sign-in modal and the extension UI cannot be verified.
 - Chrome DevTools MCP available when an agent runs E2E steps (optional; you can run Step 2 manually).
 - For local run: `npm run test` must pass before considering E2E.
 
-**To green E2E for Chrome Web Store:** Run Step 2 in a Chrome window where you are logged into LinkedIn and JobMate is installed. After running E-1, E-2, E-3, set each Status in [TEST_CASES.md](TEST_CASES.md) to **pass** or **fail**.
+**To green E2E for Chrome Web Store:** Run Step 2 in a Chrome window where you are logged into LinkedIn and Jobs Hero is installed. After running E-1, E-2, E-3, set each Status in [TEST_CASES.md](TEST_CASES.md) to **pass** or **fail**.
 
 ---
 
@@ -68,12 +68,12 @@ Run each E2E case below in order. Use Chrome DevTools MCP to navigate, click, an
 
 | ID  | Description |
 |-----|-------------|
-| E-1 | On LinkedIn jobs search, open JobMate filters → set hide viewed → Apply → list updates |
+| E-1 | On LinkedIn jobs search, open Jobs Hero filters → set hide viewed → Apply → list updates |
 
 **Steps:**
 
 1. Navigate to a LinkedIn jobs search URL (see Base URL above). Wait for the jobs list to load.
-2. Take a snapshot; confirm the JobMate control bar is visible (e.g. "Page Filters" / "Freshness" next to "All filters").
+2. Take a snapshot; confirm the Jobs Hero control bar is visible (e.g. "Page Filters" / "Freshness" next to "All filters").
 3. Click the **Page Filters** button (id: `jm-btn-page-filters`). Modal "Page Filters (Visual)" should open.
 4. In the modal, check **Hide Viewed** (checkbox id: `jm-hide-viewed`).
 5. Click **Show results** (button id: `jm-page-apply`). Modal closes.
@@ -90,9 +90,9 @@ Run each E2E case below in order. Use Chrome DevTools MCP to navigate, click, an
 
 **Steps:**
 
-1. On the same LinkedIn jobs search page, ensure the JobMate control bar is present.
+1. On the same LinkedIn jobs search page, ensure the Jobs Hero control bar is present.
 2. Click a job card in the list to open the job details (right-hand panel or similar).
-3. Take a snapshot of the job details area. Verify that the JobMate insight panel (applicant count, company stats, or similar) is visible in or near the job details.
+3. Take a snapshot of the job details area. Verify that the Jobs Hero insight panel (applicant count, company stats, or similar) is visible in or near the job details.
 4. **Pass:** Insight content appears when a job is selected. **Fail:** No insight panel or stats visible.
 
 ---
@@ -107,7 +107,7 @@ Run each E2E case below in order. Use Chrome DevTools MCP to navigate, click, an
 
 1. Navigate to a LinkedIn jobs search URL. Wait for the page to load.
 2. Take a snapshot. Locate the "All filters" button (or pill) in the UI.
-3. Verify that the JobMate control bar (element id: `job-mate-control-bar`) is present and appears next to or near "All filters" (e.g. same row, before or after it). It should contain at least "Page Filters" and "Freshness" buttons.
+3. Verify that the Jobs Hero control bar (element id: `job-mate-control-bar`) is present and appears next to or near "All filters" (e.g. same row, before or after it). It should contain at least "Page Filters" and "Freshness" buttons.
 4. **Pass:** Control bar is visible next to "All filters". **Fail:** Control bar missing or not next to "All filters".
 
 ---
