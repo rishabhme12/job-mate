@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dynamically inject Manifest Data
     const manifest = chrome.runtime.getManifest();
     const extName = manifest.name || "Jobs Hero";
-    const extDesc = manifest.description || "Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.";
+    const extDesc = manifest.description || "Filter promoted, applied, and irrelevant LinkedIn jobs so you can focus on better opportunities faster.";
 
     // Fallback logic for icons
     const iconPath = (manifest.icons && manifest.icons['128'])

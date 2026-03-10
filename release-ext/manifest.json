@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jobs Hero - Pro Filters for LinkedIn Jobs",
   "version": "1.0.2",
-  "description": "Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.",
+  "description": "Filter promoted, applied, and irrelevant LinkedIn jobs so you can focus on better opportunities faster.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
