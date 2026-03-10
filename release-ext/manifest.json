@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Jobs Hero",
-  "version": "1.0.1",
-  "description": "LinkedIn pro search and filters and more — save you time finding right job and get more calls and interviews.",
+  "name": "Jobs Hero - Pro Filters for LinkedIn Jobs",
+  "version": "1.0.2",
+  "description": "Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

@@ -4,6 +4,61 @@ Use this when filling out the Chrome Web Store dashboard for Jobs Hero.
 
 ---
 
+## Store listing fields
+
+- **Title:** `Jobs Hero - Pro Filters for LinkedIn Jobs`
+- **Short description:** `Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.`
+
+**Listing description:**
+
+Tired of applying to "ghost jobs" on LinkedIn and hearing nothing back?
+
+Jobs Hero is a LinkedIn job search productivity tool designed to help you bypass low-quality listings, filter out the noise, and focus on roles that matter.
+
+Stop wasting hours scrolling through promoted listings, companies you want to avoid, or jobs you've already applied to. Jobs Hero cleans up your LinkedIn feed so you can apply smarter and move faster.
+
+🚀 WHY USE JOBS HERO?
+
+Save Time Every Week: Stop reading through useless, irrelevant, or low-signal job postings.
+Improve Focus: Spend more time on relevant opportunities and less time filtering noise manually.
+Declutter Your Feed: Instantly hide jobs that don't match your exact needs.
+
+✨ CORE FEATURES
+
+🎯 Smart Visibility Filters
+Instantly hide or dim jobs that waste your time:
+• Promoted/Sponsored listings
+• Jobs you have already viewed or applied to
+• Roles with "Easy Apply" (or limit strictly to Easy Apply)
+• Jobs with slow or weak review-time signals
+
+🚫 Advanced Keyword & Company Blocking
+Want to avoid specific companies or keywords?
+• Add custom include/exclude keywords for job titles and descriptions
+• Create a Company Blacklist to hide roles from specific employers, recruiting agencies, or known ghost-listing companies
+
+🏷️ On-Page Role Tagging
+Quickly scan the feed with visual tags for the roles you care about:
+• Backend, Frontend, Full Stack, Data, DevOps, AI/ML, Security, QA, Product, and more
+
+💡 Instant Insight Chips
+Get lightweight company insights inside the job details pane before you spend time applying.
+
+🔒 PRIVACY-FIRST BY DESIGN
+You own your data. Always.
+
+ZERO remote API calls for your job data.
+NO account scraping or data selling.
+ALL preferences are saved locally on your device via Chrome storage.
+
+Where does it work?
+Jobs Hero seamlessly integrates into your natural workflow on LinkedIn Jobs pages (`linkedin.com/jobs/*`).
+
+👇 INSTALL JOBS HERO FOR FREE TODAY
+Reclaim your job hunt. Filter out low-quality jobs, find better opportunities, and spend your time where it matters most.
+
+---
+
 ## Additional fields (Dashboard)
 
 - **Homepage URL:** `https://github.com/rishabhme12/job-mate`
@@ -47,22 +102,4 @@ It must remain publicly accessible so reviewers and users can open it.
 
 ## Suggested Store Description
 
-Use this as a baseline long description and customize as needed.
-
-Jobs Hero helps you triage LinkedIn job search faster with practical filters and role tagging directly on the page.
-
-What it does:
-- Filter or dim jobs by viewed/applied, promoted, Easy Apply, and review-time signals.
-- Add include/exclude keyword filters for job titles and snippets.
-- Hide jobs from specific companies with a company blacklist.
-- Add on-page role tags (Backend, Frontend, Data, DevOps, AI/ML, Security, QA, Product, and more).
-- Show lightweight company insight chips in the job details pane.
-
-Privacy-first by design:
-- No remote API calls for your job data.
-- No account scraping or data selling.
-- Preferences are saved locally via Chrome storage.
-
-Works on:
-- LinkedIn Jobs pages (`linkedin.com/jobs/*`)
-- LinkedIn Feed pages where job cards appear (`linkedin.com/feed/*`)
+Use the store listing fields above as the source of truth for the current CWS copy.
