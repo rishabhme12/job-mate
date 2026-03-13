@@ -101,5 +101,7 @@ accurate jobs/offerletter - linkedin pro search and filters and more to get incr
 8. Freshness should show values and should be in green state if any time restructions are applied. also can we make linkedin time filters show the right value.
 9. Should work on AI powered new search interface linkedin
 10. respoted filters
+11. add supporting role tags as well
+12. maintaining list of roles cliked apply and collect applied status and maintaing in local csv
 
 

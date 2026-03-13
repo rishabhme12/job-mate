@@ -87,6 +87,10 @@ class KeywordEngine {
         console.table(scores); // Nice table in console
 
         // 3. Post-Processing / Tie Breaking
+        // Title-priority: explicit "data engineer" in title should not lose to Backend (shared keywords).
+        if (/\bdata\s+engineer(s|ing)?\b/.test(cleanTitle) && (scores['Data Engineering'] || 0) >= (currentTitleWeight || 0)) {
+            return 'Data Engineering';
+        }
         // "Fullstack" usually implies matches in both backend and frontend.
         // If "Fullstack" score is > 0 (even just from title), it often overrides pure backend/frontend.
         if (scores['Fullstack'] > 0 || (cleanTitle.includes('full') && cleanTitle.includes('stack'))) {

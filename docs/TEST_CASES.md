@@ -14,6 +14,7 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 | U-8 | KeywordEngine: classify returns Backend for "Backend Engineer" | unit | tagging | pass | Node |
 | U-9 | KeywordEngine: classify returns Data Engineering for ETL title | unit | tagging | pass | Node |
 | U-10 | KeywordEngine: classify returns Not Sure for low/no match | unit | tagging | pass | Node |
+| U-14 | KeywordEngine: Senior Data Engineer with backend-heavy JD returns Data Engineering | unit | tagging | pass | Node |
 | U-11 | Storage: getSettings returns defaults when empty | unit | storage | pass | Node, chrome mocked |
 | U-12 | Storage: saveSettings merges with existing | unit | storage | pass | Node, chrome mocked |
 | U-13 | KeywordEngine: golden-set tagging accuracy (20 JDs) ≥ 70% | unit | tagging | pass | Node, fixture job_tagging_golden_set.json |

@@ -30,4 +30,11 @@ describe('KeywordEngine', () => {
         const out = KeywordEngine.classify('Chief of Staff', 'Coordinating meetings and travel.');
         expect(out).toBe('Not Sure');
     });
+
+    it('U-14: Senior Data Engineer with backend-heavy JD returns Data Engineering', () => {
+        // Long body so both Backend and Data Engineering get body scores; title-priority rule must prefer Data Engineering.
+        const body = 'Role: Senior Data Engineer. Location: India/Remote. Python, RDF/SPARQL, YASR, YASGUI, SQL, REST & GraphQL, ETL/ELT, GCP, BQ, GKE, Helm, Dataproc, Terraform, IAM, Apache Jena, React, Machine Learning and Knowledge Graphs. Build APIs and database pipelines.';
+        const out = KeywordEngine.classify('Senior Data Engineer', body);
+        expect(out).toBe('Data Engineering');
+    });
 });
