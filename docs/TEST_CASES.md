@@ -21,6 +21,7 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 | E-1 | On LinkedIn jobs search, open Jobs Hero filters → set hide viewed → Apply → list updates | E2E | filters | pending | Chrome MCP |
 | E-2 | Insight panel shows applicant/company stats when job selected | E2E | insights | pending | Chrome MCP |
 | E-3 | Control bar appears next to "All filters" on jobs page (Freshness, Page Filters) | E2E | UI | pending | Chrome MCP |
+| E-4 | Filter pill × (dismiss) clears that filter without opening modal; × does not blink on hover | E2E | UI | pending | Chrome MCP |
 
 ## How to run
 

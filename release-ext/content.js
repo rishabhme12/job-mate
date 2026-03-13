@@ -323,8 +323,8 @@ let injectionInterval = null;
 
 function ensureInjectedWithRetry() {
     if (document.getElementById('job-mate-control-bar')) {
-        jmControlBar.updateSearchButtonState();
-        jmControlBar.updatePageButtonState();
+        // Do not update pill state here: updating on every call caused the filter cross to
+        // blink on hover and clicks to be lost when innerHTML was replaced by mutations.
         return true;
     }
 
@@ -368,6 +368,9 @@ function handleUrlChange() {
         }
     }
     ensureInjectedWithRetry();
+    // Refresh pill state when URL changes (e.g. SPA navigation or freshness applied).
+    jmControlBar.updateSearchButtonState();
+    jmControlBar.updatePageButtonState();
     JobMate.handleMutation();
 }
 
@@ -441,10 +444,8 @@ JobMate.handleMutation = function () {
 
     // Attempt Injection (Reactive)
     ensureInjectedWithRetry();
-
-    // Ensure button states match current URL/Settings (Fixes SPA navigation issues)
-    jmControlBar.updateSearchButtonState();
-    jmControlBar.updatePageButtonState();
+    // Pill state is only updated on inject and on URL change to avoid re-rendering the
+    // dismiss icons on every mutation (which caused blink and broken cross clicks).
 };
 
 console.log("JobMate: Content Script (v10.2 Dual Modals) Ready");
