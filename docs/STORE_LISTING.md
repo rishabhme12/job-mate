@@ -103,3 +103,70 @@ It must remain publicly accessible so reviewers and users can open it.
 ## Suggested Store Description
 
 Use the store listing fields above as the source of truth for the current CWS copy.
+
+---
+
+## SEO & conversion improvements
+
+CWS search and discovery use **title**, **short description**, and the **start of the detailed description**. Use the copy below to improve findability and conversion.
+
+### 1) Title (manifest + dashboard)
+
+- Keep **LinkedIn** and **jobs** early; add high-intent terms if space allows.
+- **Current:** `Jobs Hero - Pro Filters for LinkedIn Jobs`
+- **Option A (keyword-rich):** `Jobs Hero – Hide Promoted & Applied LinkedIn Jobs | Filters & Tags`
+- **Option B (shorter):** `Jobs Hero: Filter LinkedIn Jobs – Hide Promoted, Applied, Irrelevant`
+
+Use one that stays within CWS title limits and doesn’t feel stuffed.
+
+### 2) Short description (≤132 characters)
+
+Shown in search and category listings. Lead with the main search phrases: *hide promoted*, *hide applied*, *LinkedIn job filter*.
+
+**Current (108 chars):**  
+`Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.`
+
+**Suggested (131 chars):**  
+`Hide promoted, applied & irrelevant LinkedIn jobs. Keyword filters, company blacklist, role tags. Free, privacy-first—no data sent to servers.`
+
+**Alternative (128 chars):**  
+`Filter LinkedIn jobs: hide promoted, applied & viewed. Keywords, company blocklist, role tags. All data stays in your browser—free.`
+
+### 3) Detailed description – first 2–3 lines (snippet)
+
+The first ~2–3 lines often appear in search. Lead with **what it does** and **main keywords**, then emotion.
+
+**Replace the current opener with:**
+
+```
+Filter and hide promoted, applied, and irrelevant LinkedIn jobs so you can focus on roles that matter. Tired of "ghost jobs" and endless scrolling? Jobs Hero cleans up your LinkedIn Jobs feed with one-click filters, keyword blocking, and role tags—all running locally in your browser.
+```
+
+Then keep the rest of your description (WHY USE, CORE FEATURES, PRIVACY, etc.) as-is; the structure and emojis are fine.
+
+### 4) Category
+
+- **Current:** Workflow & Planning  
+- **Consider:** **Productivity** — many job-search and “get things done” extensions live here; users often browse or search this category. Test if it improves discovery.
+
+### 5) Screenshots and captions
+
+- **Order:** Put the strongest before/after (clean feed with filters) as **screenshot 1**.
+- **Captions:** Use clear, keyword-rich captions (they’re visible and can help discovery):
+  - e.g. `Hide promoted and applied jobs on LinkedIn`
+  - `Filter by keywords and company blacklist`
+  - `Role tags and insights on LinkedIn Jobs`
+- Ensure at least 1–2 screenshots show the control bar and filters (builds trust).
+
+### 6) Ratings (conversion)
+
+- You have **2 ratings**; more ratings help social proof and ranking.
+- Add a **one-time in-extension prompt** to leave a review after a positive moment (e.g. after they’ve applied a filter or used the extension a few times), with a link to your CWS listing. Don’t prompt on every load.
+
+### 7) Keywords to use naturally in the description
+
+Weave these into the body (you already use several): *LinkedIn jobs*, *hide promoted jobs*, *hide applied jobs*, *LinkedIn job filter*, *job search*, *keyword filter*, *company blacklist*, *privacy*, *local*, *free*.
+
+---
+
+**Summary:** Update short description and the first paragraph of the detailed description for SEO; consider Productivity category and stronger first screenshot + captions; add a single, gentle review prompt in the extension to improve ratings over time.

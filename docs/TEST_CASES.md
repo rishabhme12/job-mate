@@ -22,6 +22,7 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 | E-2 | Insight panel shows applicant/company stats when job selected | E2E | insights | pending | Chrome MCP |
 | E-3 | Control bar appears next to "All filters" on jobs page (Freshness, Page Filters) | E2E | UI | pending | Chrome MCP |
 | E-4 | Filter pill × (dismiss) clears that filter without opening modal; × does not blink on hover | E2E | UI | pending | Chrome MCP |
+| E-5 | Job detail: when JD has "Role: X" and visible title is company name, role tag uses X (e.g. Data Engineering) | E2E | tagging | pending | Chrome MCP / manual |
 
 ## How to run
 

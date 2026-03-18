@@ -59,6 +59,17 @@ function getTagClass(tag) {
     return 'unknown';
 }
 
+// Use "Role: X" or "Job Title: X" from JD when visible title looks like company name (so classification uses real job title).
+function getClassificationTitle(visibleTitle, jobDescription) {
+    const title = (visibleTitle || '').trim();
+    const looksLikeRole = /\b(engineer|developer|analyst|scientist|manager|lead|architect|designer|specialist)\b/i.test(title);
+    if (looksLikeRole) return title;
+    const desc = jobDescription || '';
+    const roleMatch = desc.match(/^\s*(?:Role|Job Title):\s*(.+?)(?:\n|$)/im);
+    if (roleMatch) return roleMatch[1].trim();
+    return title;
+}
+
 function injectTag(titleElement, jobDescription) {
     if (!titleElement) return;
 
@@ -69,7 +80,8 @@ function injectTag(titleElement, jobDescription) {
     const cleanTitle = titleElement.innerText.trim();
     if (!window.KeywordEngine) return;
 
-    const classification = window.KeywordEngine.classify(cleanTitle, cleanTitle + " " + jobDescription);
+    const titleForClassification = getClassificationTitle(cleanTitle, jobDescription);
+    const classification = window.KeywordEngine.classify(titleForClassification, cleanTitle + " " + jobDescription);
     if (classification === 'Not Sure' || classification === 'Not a Job') return;
 
     let tagEl = titleElement.querySelector('.job-mate-tag');
