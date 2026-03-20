@@ -7,7 +7,7 @@ const KEYWORD_BUCKETS = {
     'Backend': ['backend', 'back-end', 'java', 'spring', 'python', 'django', 'flask', 'fastapi', 'node', 'express', 'nestjs', 'golang', 'go lang', 'ruby', 'rails', 'php', 'laravel', 'c#', '.net', 'sql', 'database', 'postgresql', 'mysql', 'redis', 'api', 'microservices', 'server-side', 'elasticsearch', 'opensearch', 'graphql'],
     'Frontend': ['frontend', 'front-end', 'javascript', 'typescript', 'react', 'next.js', 'vue', 'angular', 'svelte', 'html', 'css', 'tailwind', 'sass', 'webpack', 'vite', 'redux', 'ui/ux', 'web design', 'figma'],
     'Mobile': ['mobile', 'ios', 'android', 'swift', 'kotlin', 'flutter', 'react native', 'dart', 'objective-c', 'app developer', 'mobile developer'],
-    'Data Engineering': ['data engineer', 'big data', 'spark', 'pyspark', 'hadoop', 'kafka', 'airflow', 'etl', 'hivesql', 'snowflake', 'databricks', 'warehouse', 'lakehouse', 'delta lake', 'iceberg', 'redshift', 'dbt', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'informatica', 'iics', 'powercenter', 'scala', 'flink', 'data platform', 'python', 'sql', 'postgresql', 'nosql', 'database', 'api', 'pandas', 'numpy', 'scraping', 'scrapy', 'web scraping'],
+    'Data Engineering': ['data engineer', 'bigquery', 'big data', 'spark', 'pyspark', 'hadoop', 'kafka', 'airflow', 'etl', 'hivesql', 'snowflake', 'databricks', 'warehouse', 'lakehouse', 'delta lake', 'iceberg', 'redshift', 'dbt', 'pipeline', 'glue', 'athena', 'kinesis', 'snaplogic', 'informatica', 'iics', 'powercenter', 'scala', 'flink', 'data platform', 'python', 'sql', 'postgresql', 'nosql', 'database', 'api', 'pandas', 'numpy', 'scraping', 'scrapy', 'web scraping'],
     'Data Analytics': ['data analyst', 'business analyst', 'business intelligence', 'bi', 'tableau', 'power bi', 'looker', 'quicksight', 'dashboard', 'visualization', 'analytics', 'reporting', 'excel', 'sheets', 'statistics', 'a/b testing', 'mixpanel', 'sql', 'python'],
     'Data Science': ['data scientist', 'data science', 'pandas', 'numpy', 'scipy', 'scikit-learn', 'matplotlib', 'seaborn', 'jupyter', 'modeling', 'predictive', 'statistical', 'r programming', 'mathematics', 'python', 'sql'],
     'DevOps': ['devops', 'sre', 'site reliability', 'cloud', 'aws', 'amazon web services', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'ansible', 'jenkins', 'ci/cd', 'linux', 'bash', 'scripting', 'infrastructure', 'sysadmin', 'prometheus', 'grafana', 'datadog', 'elk', 'python', 'bash'],
@@ -18,6 +18,25 @@ const KEYWORD_BUCKETS = {
     'Product': ['product manager', 'product owner', 'technical product manager', 'roadmap', 'agile', 'scrum', 'user stories', 'backlog', 'stakeholder'],
     'Fullstack': ['fullstack', 'full-stack', 'full stack'] // Special case: often overrides others
 };
+
+// Title wins: when the job title explicitly states a role, trust it over body keyword scores.
+// Order matters: more specific phrases first.
+const TITLE_ROLE_PATTERNS = [
+    [/\bdata\s+engineer(s|ing)?\b/, 'Data Engineering'],
+    [/\bdata\s+scientist(s)?\b/, 'Data Science'],
+    [/\bdata\s+analyst(s)?\b/, 'Data Analytics'],
+    [/\bfullstack\b|\bfull-stack\b|\bfull\s+stack\b/, 'Fullstack'],
+    [/\bproduct\s+manager\b|\bproduct\s+owner\b/, 'Product'],
+    [/\bmachine\s+learning\b|\bml\s+engineer\b|\bai\s+engineer\b/, 'AI/ML'],
+    [/\bquality\s+assurance\b|\bsdet\b|\bqa\s+engineer\b/, 'QA'],
+    [/\bsite\s+reliability\b|\bsre\b/, 'DevOps'],
+    [/\bbackend\b|\bback-end\b/, 'Backend'],
+    [/\bfrontend\b|\bfront-end\b/, 'Frontend'],
+    [/\bdevops\b/, 'DevOps'],
+    [/\bmobile\s+engineer\b|\bmobile\s+developer\b|\bios\s+engineer\b|\bandroid\s+engineer\b/, 'Mobile'],
+    [/\bembedded\b|\bfirmware\s+engineer\b/, 'Embedded/Systems'],
+    [/\bsecurity\s+engineer\b|\bsecurity\s+developer\b|\bcyber\s+security\b/, 'Security']
+];
 
 // Negative lookahead/lookbehind is hard in simple iterators, so we use scoring.
 // Some keywords are "stronger" than others.
@@ -87,18 +106,9 @@ class KeywordEngine {
         console.table(scores); // Nice table in console
 
         // 3. Post-Processing / Tie Breaking
-        // Title-priority: explicit "data engineer" in title should not lose to Backend (shared keywords).
-        if (/\bdata\s+engineer(s|ing)?\b/.test(cleanTitle) && (scores['Data Engineering'] || 0) >= (currentTitleWeight || 0)) {
-            return 'Data Engineering';
-        }
-        // "Fullstack" usually implies matches in both backend and frontend.
-        // If "Fullstack" score is > 0 (even just from title), it often overrides pure backend/frontend.
-        if (scores['Fullstack'] > 0 || (cleanTitle.includes('full') && cleanTitle.includes('stack'))) {
-            // Check if we have strong backend AND frontend signals?
-            // Actually, usually title is enough.
-            if (scores['Fullstack'] >= currentTitleWeight) {
-                return 'Fullstack';
-            }
+        // Title wins: if the title explicitly states a role, return that category.
+        for (const [pattern, category] of TITLE_ROLE_PATTERNS) {
+            if (pattern.test(cleanTitle)) return category;
         }
 
         // Tie-Breaking Rule for DevOps

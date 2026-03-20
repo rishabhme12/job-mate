@@ -50,6 +50,11 @@
     "expectedTag": "Data Engineering"
   },
   {
+    "title": "GCP Data Engineer",
+    "description": "We are looking for a skilled GCP Data Engineer with strong expertise in BigQuery, Python, Airflow, and Git. Design and build scalable data pipelines using Python. Work extensively with BigQuery for data processing, optimization, and analytics. Implement workflow orchestration using Airflow and Cloud Composer. GCP and cloud data solutions.",
+    "expectedTag": "Data Engineering"
+  },
+  {
     "title": "Data Analyst",
     "description": "Create dashboards and reports in Tableau and Power BI. Business intelligence and analytics. SQL and Excel. A/B testing and statistics. Work with stakeholders on visualization and reporting.",
     "expectedTag": "Data Analytics"
