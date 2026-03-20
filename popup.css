@@ -1,0 +1,165 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 340px;
+    background:
+        radial-gradient(circle at top left, rgba(11, 92, 255, 0.12), transparent 42%),
+        linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+    color: #0f172a;
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.popup-shell {
+    padding: 18px;
+}
+
+.popup-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.popup-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.eyebrow {
+    margin: 0 0 4px;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+#popup-title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.1;
+}
+
+.popup-description {
+    margin: 6px 0 0;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.popup-card {
+    padding: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.08);
+}
+
+.popup-copy {
+    margin: 0 0 14px;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.primary-link,
+.mini-link {
+    text-decoration: none;
+}
+
+.primary-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 42px;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 120ms ease, background 120ms ease;
+}
+
+.primary-link:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+.link-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.note-card {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(245, 158, 11, 0.24);
+    border-left: 4px solid #f59e0b;
+    border-radius: 14px;
+    background: rgba(255, 251, 235, 0.9);
+}
+
+.note-title {
+    margin: 0 0 8px;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.note-item {
+    margin: 0;
+    color: #78350f;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.note-item + .note-item {
+    margin-top: 3px;
+}
+
+.mini-link {
+    display: block;
+    padding: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78);
+    color: inherit;
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.mini-link:hover {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.4);
+    background: rgba(255, 255, 255, 0.94);
+}
+
+.mini-link-title {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mini-link-copy {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.popup-footer {
+    margin-top: 10px;
+    color: #64748b;
+    font-size: 11px;
+    text-align: right;
+}
