@@ -6,7 +6,7 @@ Use this when filling out the Chrome Web Store dashboard for Jobs Hero.
 
 ## Store listing fields
 
-- **Title:** `Jobs Hero - Pro Filters for LinkedIn Jobs`
+- **Title:** `LinkedIn Jobs Filter and Search - Jobs Hero`
 - **Short description:** `Supercharge your LinkedIn job search! Filter out promoted, applied, and irrelevant roles so you can focus on better opportunities faster.`
 
 **Listing description:**
@@ -113,7 +113,7 @@ CWS search and discovery use **title**, **short description**, and the **start o
 ### 1) Title (manifest + dashboard)
 
 - Keep **LinkedIn** and **jobs** early; add high-intent terms if space allows.
-- **Current:** `Jobs Hero - Pro Filters for LinkedIn Jobs`
+- **Current:** `LinkedIn Jobs Filter and Search - Jobs Hero`
 - **Option A (keyword-rich):** `Jobs Hero – Hide Promoted & Applied LinkedIn Jobs | Filters & Tags`
 - **Option B (shorter):** `Jobs Hero: Filter LinkedIn Jobs – Hide Promoted, Applied, Irrelevant`
 

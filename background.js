@@ -1,3 +1,6 @@
+const UNINSTALL_FEEDBACK_URL = 'https://tally.so/r/lbR85o';
+chrome.runtime.setUninstallURL(UNINSTALL_FEEDBACK_URL);
+
 // Listen for extension installation or update
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
