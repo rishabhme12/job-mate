@@ -21,4 +21,16 @@ describe('action popup UI', () => {
         expect(backgroundSrc).toContain("details.reason === 'install'");
         expect(backgroundSrc).toContain("chrome.runtime.getURL('welcome.html')");
     });
+
+    it('keeps the tutorial link at the end of the popup support links', () => {
+        const popupHtml = readFileSync(join(root, 'popup.html'), 'utf8');
+        const linkGridMarkup = popupHtml.match(/<section class="link-grid"[\s\S]*?<\/section>/)?.[0];
+        const tutorialIndex = linkGridMarkup?.indexOf('id="tutorial-link"') ?? -1;
+        const rateUsIndex = linkGridMarkup?.indexOf('Rate Us') ?? -1;
+        const feedbackIndex = linkGridMarkup?.indexOf('Feedback') ?? -1;
+
+        expect(linkGridMarkup).toBeTruthy();
+        expect(tutorialIndex).toBeGreaterThan(feedbackIndex);
+        expect(feedbackIndex).toBeGreaterThan(rateUsIndex);
+    });
 });
