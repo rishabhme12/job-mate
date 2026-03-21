@@ -111,6 +111,21 @@ class KeywordEngine {
             if (pattern.test(cleanTitle)) return category;
         }
 
+        const frontendScore = scores['Frontend'] || 0;
+        const backendScore = scores['Backend'] || 0;
+        const fullstackScore = scores['Fullstack'] || 0;
+
+        // Treat strong frontend/backend near-ties as Fullstack instead of
+        // defaulting to whichever bucket happens to be iterated first.
+        const frontendBackendMax = Math.max(frontendScore, backendScore);
+        const isFrontendBackendNearTie =
+            frontendBackendMax >= 6 &&
+            Math.min(frontendScore, backendScore) >= frontendBackendMax * 0.8;
+
+        if (isFrontendBackendNearTie) {
+            return 'Fullstack';
+        }
+
         // Tie-Breaking Rule for DevOps
         // "DevOps" often wins just because of keywords like AWS, Cloud, Docker, CI/CD which are valid for Backend/Data too.
         // Rule: If DevOps is the winner, but Backend or Data is *close* (within 20% or 5 points), 
@@ -127,8 +142,6 @@ class KeywordEngine {
         }
 
         if (winner === 'DevOps') {
-            const backendScore = scores['Backend'] || 0;
-            const fullstackScore = scores['Fullstack'] || 0;
             const dataEngScore = scores['Data Engineering'] || 0;
             const dataAnalyticsScore = scores['Data Analytics'] || 0;
             const dataScienceScore = scores['Data Science'] || 0;

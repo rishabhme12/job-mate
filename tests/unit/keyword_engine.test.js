@@ -37,4 +37,17 @@ describe('KeywordEngine', () => {
         const out = KeywordEngine.classify('Senior Data Engineer', body);
         expect(out).toBe('Data Engineering');
     });
+
+    it('U-15: frontend/backend near-tie returns Fullstack', () => {
+        const body = `
+            We are looking for a skilled Web Developer to design, maintain, and optimize our websites and web applications.
+            The ideal candidate should have strong front-end and back-end development experience.
+            Design responsive company websites and landing pages.
+            Optimize user experience across browsers and devices.
+            Strong proficiency in HTML, CSS, JavaScript, and at least one framework.
+            Experience with PHP, WordPress, MySQL, and API integrations.
+        `;
+        const out = KeywordEngine.classify('Web Developer - PH', body);
+        expect(out).toBe('Fullstack');
+    });
 });
