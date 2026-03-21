@@ -1,6 +1,6 @@
 # Chrome Web Store Publish Checklist (Jobs Hero)
 
-**Prepared on:** March 9, 2026
+**Prepared on:** March 21, 2026
 **Competitor reference:** [Hide Applied Jobs - LinkedIn](https://chromewebstore.google.com/detail/hide-applied-jobs-linkedi/jkoegkdeggghnoenfgjoklfkmihkighf)
 
 ## 1) Submission blockers to clear first
@@ -34,7 +34,7 @@
 Snapshot from the listing on March 3, 2026:
 - Competitor rating shown: `4.2` (`47` ratings).
 - Users shown: `20,000`.
-- Last updated shown: `August 22, 2025`.
+- Last updated shown: `August 22, 2025` (competitor listing snapshot, not Jobs Hero).
 - Current version shown: `1.8.3`.
 - Primary promise: hide applied jobs and promoted jobs on LinkedIn.
 
@@ -56,17 +56,17 @@ Proof points:
 
 ## 6) Pre-publish QA gate
 
-- [ ] `npm test` passes.
+- [x] `npm test` passes.
 - [ ] Manual regression on LinkedIn Jobs search results.
 - [ ] Manual regression on LinkedIn Feed job cards.
 - [ ] Verify no console errors on page transitions.
-- [x] Zip package only includes required extension files (no secrets, no local artifacts).
+- [x] Zip package only includes required extension files (including popup and onboarding assets; no secrets or local artifacts).
 - [ ] Listing is not missing icon/screenshot/description (missing assets can cause rejection).
 - [ ] Privacy fields in dashboard exactly match extension behavior and privacy policy.
 
 ## 7) First 2 version milestones after launch
 
-- **v1.0.1 (fast follow):** bugfixes from first-user reports + selector resilience.
+- **v1.0.4 (fast follow):** bugfixes from first-user reports + selector resilience.
 - **v1.1.0:** saved filter presets + lightweight onboarding tips.
 
 ## References

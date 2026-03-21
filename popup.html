@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs Hero</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <main class="popup-shell">
+        <header class="popup-header">
+            <img id="popup-icon" class="popup-icon" src="icons/icon48.png" alt="Jobs Hero icon">
+            <div>
+                <h1 id="popup-title">Jobs Hero</h1>
+            </div>
+        </header>
+
+        <section class="popup-card">
+            <p class="popup-copy">
+                Keep the browsing flow clean: use the <strong>Freshness</strong> and
+                <strong>Page Filters</strong> pills directly in LinkedIn's top filter bar.
+            </p>
+            <a class="primary-link" href="https://www.linkedin.com/jobs/search" target="_blank" rel="noopener noreferrer">
+                Open LinkedIn Jobs
+            </a>
+        </section>
+
+        <section class="note-card" aria-label="Usage notes">
+            <p class="note-title">Note</p>
+            <p class="note-item">• Works on LinkedIn Jobs when you're signed in</p>
+            <p class="note-item">• Works in classic search view, not AI search (beta)</p>
+        </section>
+
+        <section class="link-grid" aria-label="Support and onboarding">
+            <a class="mini-link" href="https://chromewebstore.google.com/detail/glkllakoboeiaefcfcbbdgfkkmkoggga?utm_source=popup-rating" target="_blank" rel="noopener noreferrer">
+                <span class="mini-link-title">Rate Us ❤️</span>
+                <span class="mini-link-copy">Enjoying Jobs Hero? A quick review helps a lot.</span>
+            </a>
+            <a class="mini-link" href="https://tally.so/r/2Er9qA" target="_blank" rel="noopener noreferrer">
+                <span class="mini-link-title">Feedback ✨</span>
+                <span class="mini-link-copy">Share ideas, bugs, or feature requests</span>
+            </a>
+            <a id="tutorial-link" class="mini-link" href="#" target="_blank" rel="noopener noreferrer">
+                <span class="mini-link-title">Tutorial</span>
+                <span class="mini-link-copy">See the product walkthrough</span>
+            </a>
+        </section>
+
+        <footer class="popup-footer">
+            <span id="popup-version"></span>
+        </footer>
+    </main>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,19 +1,20 @@
 # Jobs Hero Privacy Policy
 
-**Last updated:** March 9, 2026
+**Last updated:** March 21, 2026
 
 ## Overview
 
-Jobs Hero ("the extension") is a browser extension that adds job filters and role tagging on LinkedIn Jobs. This policy describes what data the extension uses and where it is stored.
+Jobs Hero ("the extension") is a browser extension that adds job filters, role tagging, and lightweight company insights on LinkedIn Jobs and LinkedIn Feed pages. This policy describes what data the extension uses, how it is used, and where it is stored.
 
 ## Data collection and use
 
-- **No data is sent to our servers.** The extension does not transmit any data to external servers. All processing happens in your browser.
+- **No data is sent to our servers.** The extension does not transmit page content, job data, or settings to external servers. All processing happens in your browser.
 - **Local storage only.** Your filter preferences (e.g. hide viewed, keyword filters, company blacklist) are stored locally in your browser using Chrome’s `storage.local` API. Only the extension can read or write this data.
-- **Page content.** The extension reads job listings and job detail content on LinkedIn pages you visit (only on `linkedin.com/jobs/` and `linkedin.com/feed/`). This is used only to:
+- **Page content.** The extension reads job listings and job detail content on LinkedIn pages you visit (only on `linkedin.com/jobs/*` and `linkedin.com/feed/*`). This is used only to:
   - Apply your filters (e.g. hide viewed/applied, keyword match).
   - Show role-type tags and an insight panel (e.g. company size, industry) next to job details.
 - **No account or personal data.** We do not collect, store, or transmit your LinkedIn account details, profile, or any personally identifiable information.
+- **No sale or transfer of data.** We do not sell, share, or transfer user data to third parties. Any links you choose to open from the extension, such as feedback or uninstall survey pages, are third-party pages you visit directly.
 
 ## Permissions
 

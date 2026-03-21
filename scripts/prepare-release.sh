@@ -24,6 +24,9 @@ EXT_FILES=(
   ui_control_bar.js
   storage.js
   styles.css
+  popup.html
+  popup.css
+  popup.js
   welcome.html
   welcome.css
   welcome.js

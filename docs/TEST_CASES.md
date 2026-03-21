@@ -14,12 +14,16 @@ Single source of truth for all test cases (unit + E2E). Full regression = run ev
 | U-8 | KeywordEngine: classify returns Backend for "Backend Engineer" | unit | tagging | pass | Node |
 | U-9 | KeywordEngine: classify returns Data Engineering for ETL title | unit | tagging | pass | Node |
 | U-10 | KeywordEngine: classify returns Not Sure for low/no match | unit | tagging | pass | Node |
+| U-14 | KeywordEngine: Senior Data Engineer with backend-heavy JD returns Data Engineering | unit | tagging | pass | Node |
 | U-11 | Storage: getSettings returns defaults when empty | unit | storage | pass | Node, chrome mocked |
 | U-12 | Storage: saveSettings merges with existing | unit | storage | pass | Node, chrome mocked |
 | U-13 | KeywordEngine: golden-set tagging accuracy (20 JDs) ≥ 70% | unit | tagging | pass | Node, fixture job_tagging_golden_set.json |
+| U-15 | Background: setUninstallURL targets Tally uninstall form (lbR85o) | unit | lifecycle | pass | Node, tests/background_uninstall_url.test.js |
 | E-1 | On LinkedIn jobs search, open Jobs Hero filters → set hide viewed → Apply → list updates | E2E | filters | pending | Chrome MCP |
 | E-2 | Insight panel shows applicant/company stats when job selected | E2E | insights | pending | Chrome MCP |
 | E-3 | Control bar appears next to "All filters" on jobs page (Freshness, Page Filters) | E2E | UI | pending | Chrome MCP |
+| E-4 | Filter pill × (dismiss) clears that filter without opening modal; × does not blink on hover | E2E | UI | pending | Chrome MCP |
+| E-5 | Job detail: when JD has "Role: X" and visible title is company name, role tag uses X (e.g. Data Engineering) | E2E | tagging | pending | Chrome MCP / manual |
 
 ## How to run
 

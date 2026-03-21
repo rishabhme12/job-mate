@@ -212,6 +212,28 @@ class JobMateControlBar {
        PAGE FILTERS (Frontend DOM Hiding)
        ========================================================================= */
 
+    renderModalFooterHTML({ resetId, resetLabel, applyId, applyLabel }) {
+        return `
+                <div class="job-mate-modal-footer">
+                    <div class="job-mate-modal-footer-meta">
+                        <a
+                            class="job-mate-modal-footer-link"
+                            href="https://chromewebstore.google.com/detail/glkllakoboeiaefcfcbbdgfkkmkoggga?utm_source=footer-rating"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Rate Jobs Hero on the Chrome Web Store"
+                        >
+                            Like Jobs Hero? Rate us ❤️
+                        </a>
+                    </div>
+                    <div class="job-mate-modal-footer-actions">
+                        <button class="job-mate-btn job-mate-btn-secondary" id="${resetId}">${resetLabel}</button>
+                        <button class="job-mate-btn job-mate-btn-primary" id="${applyId}">${applyLabel}</button>
+                    </div>
+                </div>
+        `;
+    }
+
     renderPageModalHTML() {
         const toggle = (id, label) => `
             <label class="job-mate-toggle-wrapper">
@@ -265,10 +287,12 @@ class JobMateControlBar {
                         </div>
                     </div>
                 </div>
-                <div class="job-mate-modal-footer">
-                    <button class="job-mate-btn job-mate-btn-secondary" id="jm-page-reset">Reset</button>
-                    <button class="job-mate-btn job-mate-btn-primary" id="jm-page-apply">Show results</button>
-                </div>
+                ${this.renderModalFooterHTML({
+                    resetId: 'jm-page-reset',
+                    resetLabel: 'Reset',
+                    applyId: 'jm-page-apply',
+                    applyLabel: 'Show results'
+                })}
             </div>
         `;
     }
@@ -407,10 +431,12 @@ class JobMateControlBar {
                         </div>
                     </div>
                 </div>
-                <div class="job-mate-modal-footer">
-                    <button class="job-mate-btn job-mate-btn-secondary" id="jm-search-reset">Reset</button>
-                    <button class="job-mate-btn job-mate-btn-primary" id="jm-search-apply">Search</button>
-                </div>
+                ${this.renderModalFooterHTML({
+                    resetId: 'jm-search-reset',
+                    resetLabel: 'Reset',
+                    applyId: 'jm-search-apply',
+                    applyLabel: 'Search'
+                })}
             </div>
         `;
     }
