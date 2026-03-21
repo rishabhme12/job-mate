@@ -56,7 +56,7 @@ Proof points:
 
 ## 6) Pre-publish QA gate
 
-- [ ] `npm test` passes.
+- [x] `npm test` passes.
 - [ ] Manual regression on LinkedIn Jobs search results.
 - [ ] Manual regression on LinkedIn Feed job cards.
 - [ ] Verify no console errors on page transitions.
@@ -66,7 +66,7 @@ Proof points:
 
 ## 7) First 2 version milestones after launch
 
-- **v1.0.1 (fast follow):** bugfixes from first-user reports + selector resilience.
+- **v1.0.4 (fast follow):** bugfixes from first-user reports + selector resilience.
 - **v1.1.0:** saved filter presets + lightweight onboarding tips.
 
 ## References
