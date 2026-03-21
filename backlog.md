@@ -30,14 +30,16 @@ Must fix in 15 days:
 2. end to end feature testing - light dark mode, and role tags accuracy
 3. Performance logs and memory issues fix.
 4. Extension UI improvement and revisit welcome journey to make sure
-5. filters dont appear every time we launch jobs page, appear after a refresh
-6. Add rating, feedback and uninstall feedback.
-7. change URL to - https://www.linkedin.com/jobs/search
+5. Add rating, feedback and uninstall feedback.
+6. change URL to - https://www.linkedin.com/jobs/search
 
 Next 15 days
 1. Reposted filter
 2. Quality filter bug and rearranege them with quick text when to use
 3. easy apply direct link
 4. check persistance of filters values when refreshed, switching and starting a new session.
-
+5. filters dont appear every time we launch jobs page, appear after a refresh
+6. Add count of jobs
+7. remove linkedin feeds access or make it full linked access
+8. remove google font access.
 
